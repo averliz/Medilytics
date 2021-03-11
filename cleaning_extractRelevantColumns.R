@@ -10,3 +10,5 @@ as.data.frame(relevantVariableNames)
 
 actual_data <- data[, ..relevantVariableNames]
 
+write.csv(actual_data, "CleanedData.csv")
+
