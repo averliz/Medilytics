@@ -1,0 +1,68 @@
+﻿SAS Variable Name,Relevance
+BPHIGH4,Dependent Variable for High BP
+TOLDHI2,Dependent Variable for Cholesterol
+CHOLCHK2,Time since last cholesterol check
+CVDINFR4,Dependent Variable for Heart Attack
+CVDCRHD4,Dependent Variable for Angina/CHD
+CVDSTRK3,Dependent Variable for Stroke
+ASTHMA3,Dependent Variable for Asthma
+CHCSCNCR,Dependent Variable for Skin Cancer
+CHCOCNCR,Dependent Variable for Other Cancers
+CHCCOPD2,Dependent Variable for Lung Issues
+CHCKDNY2,Dependent Variable for Kidney Issues
+DIABETE4,Dependent Variable for Diabetes
+HAVARTH4,Dependent Variable for Arthritis
+PREDIAB1,Dependent Variable for Prediabetes
+SEXVAR,Demographic - Sex
+GENHLTH,Health Indicator
+PHYSHLTH,Health Indicator
+POORHLTH,Health Indicator
+HLTHPLN1,Demographic - Healthcare access
+PERSDOC2,Demographic - Healthcare professionals
+MEDCOST,Demographic - Those who can afford medical healthcare
+CHECKUP1,Demographic - Time since last routine checkup
+MARITAL,Demographic - Marital status
+EDUCA,Demographic - Education level
+RENTHOM1,Demographic - Own or rent home
+VETERAN3,Demographic - Veteran?
+EMPLOY1,Demographic - Employment status
+CHILDREN,Demographic - Number of children
+INCOME2,Demographic - Annual household income
+WEIGHT2,Demographic - Weight
+HEIGHT3,Demographic - Height
+PREGNANT,Demographic - Pregnant?
+DEAF,Demographic
+BLIND,Demographic
+SMOKE100,Demographic - Smoked 100 packs total?
+SMOKDAY2,Demographic - Current smoker?
+LASTSMK2,Demographic - When was latest cigarette?
+USENOW3,Demographic - Consume Smokeless Tobacco?
+ALCDAY5,Demographic - How many days per week or month did you consume alcoholic beverage?
+AVEDRNK3,"Demographic - On the days you drank, what was the average number of drinks?"
+DRNK3GE5,Demographic - Hw many times did you drink more than 5 drinks (men) or 4 (women) // How many times did you get wasted?
+EXERANY2,Demographic - Any Exercise?
+EXRACT11,Demographic - What type of physical activity did you spend the most time doing the past month?
+STRENGTH,Demographic - How often did you engage in muscle strengthening activities?
+FRUIT2,Demographic - How often did you eat fruit?
+FRUITJU2,Demographic - How many times did you drink pure fruit juices?
+FVGREEN1,Demographic - Eat dark green vegetables
+FRENCHF1,Demographic - How often fried potato
+POTATOE1,Demographic - How often any non fried potato
+VEGETAB2,Demographic - How often other vegetables (excluding lettuce and salads)
+HIVRISK5,Demographic - Risk of HIV
+PDIABTST,
+INSULIN1,
+BLDSUGAR,
+FEETCHK3,
+DOCTDIAB,
+CHKHEMO3,
+FEETCHK,
+EYEEXAM1,
+DIABEYE,
+DIABEDU,
+DIABAGE3,
+ARTHEXER,Arthritis - Dr. Recommend Physical Exercise?
+ARTHEDU,Arthritis - Taken educational course on managing symptoms?
+LMTJOIN3,Arthritis - Limited because of symptoms?
+ARTHDIS2,Arthritis - Affects work?
+JOINPAI2,Arthritis - Joint Pain?
