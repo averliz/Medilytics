@@ -1,12 +1,12 @@
 library(tidyverse)
 library(data.table)
-# install.packages("skimr")
+library(dplyr)
 library(skimr)
 
 setwd("C:/Users/jimmy/NTU/BC2407/Project")
 data <- fread('dataset.csv') # very taxing procedure
 
-relevantcols <- fread('RelevantColumns.csv') # a .csv of the original file, with the redundant rows removed
+relevantcols <- fread('RelevantColumns.csv', ) # a .csv of the original file, with the redundant rows removed
 relevantVariableNames <- c(relevantcols$`SAS Variable Name`)
 as.data.frame(relevantVariableNames)
 
@@ -15,8 +15,6 @@ actual_data <- data[, ..relevantVariableNames]
 disease_analysis_names <- c('BPHIGH4','TOLDHI2','CHOLCHK2', 'CVDINFR4', 'CVDCRHD4',
                      'CVDSTRK3', 'ASTHMA3', 'CHCSCNCR', 'CHCOCNCR', 'CHCCOPD2',
                      'CHCKDNY2', 'DIABETE4', 'HAVARTH4', 'PREDIAB1')
-# 
-
 
 # 'SMOKDAY2','LASTSMK2' <- these 2 var is reliant removed as it SMOKE100 is enough
 # 'AVEDRNK3','DRNK3GE5' <- ALCDAY5 is sufficient to det. if patient drinks 
@@ -38,17 +36,11 @@ demo_analysis_names <- c('SEXVAR','GENHLTH','PHYSHLTH','POORHLTH',
                          'EXRACT11','STRENGTH','FRUIT2','FRUITJU2','FVGREEN1','FRENCHF1','POTATOE1',
                          'VEGETAB2','HIVRISK5')
 non_medical <- data[,..demo_analysis_names]
-
 skim(non_medical)
 
 skim(actual_data)
 
-cor(actual_data$BPHIGH4, actual_data$SEXVAR)
-# Look at blood pressure first 
 
-chaactual_data$HEIGHT3[1]
 
-################ 
-# let us predict BPHIGH$ using all the demo analysis 
 
-model1 <- lm(BPHIGH4 <- SEXVAR)
+
