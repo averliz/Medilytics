@@ -16,6 +16,7 @@ PREDIAB1,Dependent Variable for Prediabetes
 SEXVAR,Demographic - Sex
 GENHLTH,Health Indicator
 PHYSHLTH,Health Indicator
+MENTHLTH,Health Indicator
 POORHLTH,Health Indicator
 HLTHPLN1,Demographic - Healthcare access
 PERSDOC2,Demographic - Healthcare professionals
