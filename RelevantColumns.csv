@@ -12,7 +12,6 @@ CHCCOPD2,Dependent Variable for Lung Issues
 CHCKDNY2,Dependent Variable for Kidney Issues
 DIABETE4,Dependent Variable for Diabetes
 HAVARTH4,Dependent Variable for Arthritis
-PREDIAB1,Dependent Variable for Prediabetes
 SEXVAR,Demographic - Sex
 GENHLTH,Health Indicator
 PHYSHLTH,Health Indicator
@@ -51,19 +50,3 @@ FRENCHF1,Demographic - How often fried potato
 POTATOE1,Demographic - How often any non fried potato
 VEGETAB2,Demographic - How often other vegetables (excluding lettuce and salads)
 HIVRISK5,Demographic - Risk of HIV
-PDIABTST,
-INSULIN1,
-BLDSUGAR,
-FEETCHK3,
-DOCTDIAB,
-CHKHEMO3,
-FEETCHK,
-EYEEXAM1,
-DIABEYE,
-DIABEDU,
-DIABAGE3,
-ARTHEXER,Arthritis - Dr. Recommend Physical Exercise?
-ARTHEDU,Arthritis - Taken educational course on managing symptoms?
-LMTJOIN3,Arthritis - Limited because of symptoms?
-ARTHDIS2,Arthritis - Affects work?
-JOINPAI2,Arthritis - Joint Pain?
