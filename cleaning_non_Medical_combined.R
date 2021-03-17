@@ -1,161 +1,65 @@
-library(tidyverse)
 library(data.table)
-library(dplyr)
-library(skimr)
 
-data <- fread("CleanedData.csv") 
-summary(data)
+data <- fread("CleanedData.csv") # data with relevant columns only
 
-######################### Cleaning of medical data #################
+str(data)
 
-medical_data_names <- c('BPHIGH4','TOLDHI2','CHOLCHK2', 'CVDINFR4', 'CVDCRHD4',
-                        'CVDSTRK3', 'ASTHMA3', 'CHCSCNCR', 'CHCOCNCR', 'CHCCOPD2',
-                        'CHCKDNY2', 'DIABETE4', 'HAVARTH4', 'PREDIAB1')
-summary(data[, ..medical_data_names])
-skim(data[, ..medical_data_names])
-
-
-### BPHIGH4 ###
-summary(data$BPHIGH4)
-
-# Consolidate all high BP regardless of if it is borderline or prehypertensive
-data[BPHIGH4 == 1 | BPHIGH4 == 2 | BPHIGH4 == 4 , BPHIGH4 := 1] 
-
-# Convert no High BP to 0 
-data[BPHIGH4 == 3, BPHIGH4 := 0]
-
-# Convert Not sure to NA
-data[BPHIGH4 == 7 | BPHIGH4 == 9, BPHIGH4 := NA]
-
-data$BPHIGH4 <- factor(data$BPHIGH4) # BPHIGH4 is a factor variable
-
-summary(data$BPHIGH4)
-
-
-### TOLDHI2 ###
-summary(data$TOLDHI2)
-
-# Convert No to 0
-data[TOLDHI2 == 2, TOLDHI2 := 0]
-
-# Convert Not sure or refused to answer to NA
-data[TOLDHI2 == 7 | TOLDHI2 == 9, TOLDHI2 := NA]
-
-data$TOLDHI2 <- factor(data$TOLDHI2) # TOLDHI2 is a factor variable
-
-summary(data$TOLDHI2)
-
-
-### CHOLCHK2 ###
-summary(data$CHOLCHK2)
-
-
-
-
-
-
-
-
-
-
-
-######################### Cleaning of non-medical data #################
 # Analysis of variables 
 # Jeremy - 'SEXVAR','GENHLTH','PHYSHLTH','MENTHLTH','POORHLTH','HLTHPLN1','PERSDOC2','MEDCOST','CHECKUP1'
 demo_first_set_names <- 
   c('SEXVAR','GENHLTH','PHYSHLTH','MENTHLTH','POORHLTH','HLTHPLN1','PERSDOC2','MEDCOST','CHECKUP1')
-
-summary(data[, ..demo_first_set_names])
-skim(data[, ..demo_first_set_names])
-# skim(data)
-
-
-### SEXVAR ###
-summary(data$SEXVAR) # No Na - no cleaning required 
-
-
-### GENHLTH ###
-summary(data$GENHLTH)
-
 # converting all rows with 7 (Don't know) or 9 (Refused) 
 # to NA to allow for easier MICEing
 data[GENHLTH == 9 | GENHLTH == 7, GENHLTH := NA] 
-
 summary(data$GENHLTH)
 
 
 ### PHYSHLTH ###
-
-summary(data$PHYSHLTH)
-
 # Convert value = 88 to 0 as NONE 
 data[PHYSHLTH == 88, PHYSHLTH := 0]
-
 # Convert 77 and 99 to NA for MICE 
 data[PHYSHLTH == 77 | PHYSHLTH == 99, PHYSHLTH :=NA]
-
 summary(data$PHYSHLTH)
 
 
 ### MENTHLTH ### 
-
-summary(data$MENTHLTH)
-
 # Convert 88 to 0 -> no days with bad MENTH
 data[MENTHLTH == 88, MENTHLTH := 0]
-
 # Convert 77 and 99 to NA for MICE
 data[MENTHLTH == 77 | MENTHLTH == 99, MENTHLTH := NA]
-
 summary(data$MENTHLTH)
 
 
 ### POORHLTH ###
-summary(data$POORHLTH)
-
 # Convert value = 88 to 0 as NONE 
 data[POORHLTH == 88, POORHLTH := 0]
-
 # Convert POORHLTH NA values to 0 when PHYSHLTH and MENTHLTH == 0 
-
 data[is.na(POORHLTH) & PHYSHLTH == 0 & MENTHLTH == 0, POORHLTH := 0]
-
 # Convert POORHLTH 77 and 99 values to NA for MICE
 data[POORHLTH == 77 | POORHLTH == 99, POORHLTH := NA]
-
 summary(data$POORHLTH)
 
 
 ### HLTHPLN1 ###
-summary(data$HLTHPLN1)
-
 # converting all rows with 7 (Don't know) or 9 (Refused) 
 # to NA to allow for easier MICEing
 data[HLTHPLN1 == 9 | HLTHPLN1 == 7, HLTHPLN1 := NA] 
-
 summary(data$HLTHPLN1)
 
 
 ### PERSDOC2 ###
-summary(data$PERSDOC2)
-
 # Convert having no personal doc to 0 
 data[PERSDOC2 == 3 , PERSDOC2 := 0]
-
 # converting all rows with 7 (Don't know) or 9 (Refused) 
 # to NA to allow for easier MICEing
 data[PERSDOC2 == 9 | PERSDOC2 == 7, PERSDOC2 := NA] 
-
 summary(data$PERSDOC2)
 
 
 ### MEDCOST ###
-summary(data$MEDCOST)
-
 # converting all rows with 7 (Don't know) or 9 (Refused) 
 # to NA to allow for easier MICEing
 data[MEDCOST == 9 | MEDCOST == 7, MEDCOST := NA] 
-
 summary(data$MEDCOST)
 
 
@@ -177,8 +81,6 @@ demo_first_set_names <-
   c('SEXVAR','GENHLTH','PHYSHLTH','MENTHLTH',
     'POORHLTH','HLTHPLN1','PERSDOC2','MEDCOST','CHECKUP1')
 
-skim(data[, ..demo_first_set_names])
-
 # Let us look at the str of the variables 
 str(data[, ..demo_first_set_names]) # all variables are numeric 
 
@@ -186,81 +88,53 @@ str(data[, ..demo_first_set_names]) # all variables are numeric
 for (col in demo_first_set_names) {
   set(data, j = col, value = as.factor(data[[col]]))
 }
-
-str(data[, ..demo_first_set_names]) # All are now factor variables 
+ 
 
 
 # Analysis of variables 
 # Manika - 'MARITAL','EDUCA','RENTHOM1','VETERAN3','EMPLOY1','CHILDREN', 'INCOME2','WEIGHT2'
 
 ### MARITAL STATUS ###
-
 data[MARITAL == 9, MARITAL := NA] # converting all the 9 values to NA to allow for easier MICEing
-
 data$MARITAL <- factor(data$MARITAL) # recognize marital status as a factor variable
-
 summary(data$MARITAL)
 
 ### EDUCATION LEVEL ###
-
 data[is.na(MARITAL)]
-
 data[EDUCA == 9, EDUCA := NA]
-
 data$EDUCA <- factor(data$EDUCA) # Education is also a factor variable
-
 summary(data$EDUCA)
 
 ### OWN OR RENT HOME? ###
-
 data[RENTHOM1 == 9 | RENTHOM1 == 7, RENTHOM1 := NA]
-
 data$RENTHOM1 <- factor(data$RENTHOM1)
-
 summary(data$RENTHOM1)
 
 ### VETERAN STATUS ###
-
 # People that refuse to answer are possibly doing so out of pride - they probably never served
-
 data[is.na(VETERAN3) | VETERAN3 == 7 | VETERAN3 == 9, VETERAN3 := 2]
-
 data$VETERAN3 <- factor(data$VETERAN3)
 
 ### EMPLOYMENT STATUS ###
-
 data[EMPLOY1 == 9, EMPLOY1 := NA]
-
 data$EMPLOY1 <- factor(data$EMPLOY1)
-
 summary(data$EMPLOY1)
 
 ### HOW MANY CHILDREN ###
-
 data[CHILDREN == 88, CHILDREN := 0]
-
 data[CHILDREN == 99, CHILDREN := NA]
-
 data$CHILDREN <- factor(data$CHILDREN)
-
 summary(data$CHILDREN) # is this variable considered numerical or categorical
 
 ### INCOME LEVEL ###
-
 data[INCOME2 == 77 | INCOME2 == 99, INCOME2 := NA]
-
 data$INCOME2 <- factor(data$INCOME2)
-
 summary(data$INCOME2)
 
 ### WEIGHT ###
-
 data[WEIGHT2 != 7777 & WEIGHT2 < 9000, WEIGHT2 := WEIGHT2/2.205] # converting all weights to kg
-
 data[WEIGHT2 >= 9000 & WEIGHT2 != 9999, WEIGHT2 := WEIGHT2 - 9000] # correcting the kg records
-
 data[WEIGHT2 == 7777 | WEIGHT2 == 9999, WEIGHT2 := NA ] # all those that refused/not asked are set to NA for easy MICEing
-
 summary(data$WEIGHT2)
 
 # Shao Jing - 'HEIGHT3','PREGNANT','DEAF','BLIND','SMOKE100', 'USENOW3','ALCDAY5','EXERANY2'
@@ -424,3 +298,5 @@ data[HIVRISK5 == 9, HIVRISK5 := NA] #refused
 data[HIVRISK5 == 7, HIVRISK5 := NA] #not sure
 data$HIVRISK5 <- factor(data$HIVRISK5)
 summary(data$HIVRISK5)
+
+write.csv(data, "FinalCleanedData.csv") # write all the data to a .csv for analysis
