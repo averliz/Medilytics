@@ -1,17 +1,15 @@
 ﻿SAS Variable Name,Relevance
-BPHIGH4,Dependent Variable for High BP
-TOLDHI2,Dependent Variable for Cholesterol
-CHOLCHK2,Time since last cholesterol check
-CVDINFR4,Dependent Variable for Heart Attack
-CVDCRHD4,Dependent Variable for Angina/CHD
+_RFHYPE5,Dependent Variable for High BP
+_RFCHOL2,Dependent Variable for Cholesterol
+_MICHD,Dependent Variable for Heart Attack
 CVDSTRK3,Dependent Variable for Stroke
-ASTHMA3,Dependent Variable for Asthma
+_CASTHM1,Dependent Variable for Asthma
 CHCSCNCR,Dependent Variable for Skin Cancer
 CHCOCNCR,Dependent Variable for Other Cancers
 CHCCOPD2,Dependent Variable for Lung Issues
 CHCKDNY2,Dependent Variable for Kidney Issues
 DIABETE4,Dependent Variable for Diabetes
-HAVARTH4,Dependent Variable for Arthritis
+_DRDXAR2,Dependent Variable for Arthritis
 SEXVAR,Demographic - Sex
 GENHLTH,Health Indicator
 PHYSHLTH,Health Indicator
