@@ -298,3 +298,5 @@ data[HIVRISK5 == 9, HIVRISK5 := NA] #refused
 data[HIVRISK5 == 7, HIVRISK5 := NA] #not sure
 data$HIVRISK5 <- factor(data$HIVRISK5)
 summary(data$HIVRISK5)
+
+write.csv(data, "FinalCleanedData.csv") # write all the data to a .csv for analysis
