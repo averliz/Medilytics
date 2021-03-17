@@ -1,5 +1,4 @@
-# setwd("C:/Users/mhenn/Documents/Programming/Academic/BC2407 Medilytics/Manika")
-library(data.table)
+library(dplyr)
 
 data <- fread('dataset.csv') # very taxing procedure
 # summary(data)

@@ -1,8 +1,6 @@
 library(data.table)
 
-data <- fread("CleanedData.csv") # data with relevant columns only
-
-str(data)
+data <- fread("CleanedData_medical.csv") # data with relevant columns only
 
 # Analysis of variables 
 # Jeremy - 'SEXVAR','GENHLTH','PHYSHLTH','MENTHLTH','POORHLTH','HLTHPLN1','PERSDOC2','MEDCOST','CHECKUP1'
@@ -299,4 +297,4 @@ data[HIVRISK5 == 7, HIVRISK5 := NA] #not sure
 data$HIVRISK5 <- factor(data$HIVRISK5)
 summary(data$HIVRISK5)
 
-write.csv(data, "FinalCleanedData.csv") # write all the data to a .csv for analysis
+write.csv(data, "CleanedData_nonmedical.csv") # write all the data to a .csv for analysis

@@ -1,4 +1,3 @@
-setwd("C:/Users/mhenn/Documents/Programming/Academic/BC2407 Medilytics/Manika")
 data <- fread("CleanedData.csv")
 library('data.table')
 
@@ -94,4 +93,4 @@ data[CHCCOPD2 == 7 | CHCCOPD2 == 9, CHCCOPD2 := NA] # Refused/Unsure
 data$CHCCOPD2 <- factor(data$CHCCOPD2) # TOLDHI2 is a factor variable
 summary(data$CHCCOPD2)
 
-write.csv(data, "FinalCleanedData.csv")
+write.csv(data, "CleanedData_medical.csv")
