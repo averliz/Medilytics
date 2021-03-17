@@ -1,8 +1,65 @@
+library(tidyverse)
 library(data.table)
+library(dplyr)
+library(skimr)
 
 data <- fread("CleanedData.csv") 
 summary(data)
 
+######################### Cleaning of medical data #################
+
+medical_data_names <- c('BPHIGH4','TOLDHI2','CHOLCHK2', 'CVDINFR4', 'CVDCRHD4',
+                        'CVDSTRK3', 'ASTHMA3', 'CHCSCNCR', 'CHCOCNCR', 'CHCCOPD2',
+                        'CHCKDNY2', 'DIABETE4', 'HAVARTH4', 'PREDIAB1')
+summary(data[, ..medical_data_names])
+skim(data[, ..medical_data_names])
+
+
+### BPHIGH4 ###
+summary(data$BPHIGH4)
+
+# Consolidate all high BP regardless of if it is borderline or prehypertensive
+data[BPHIGH4 == 1 | BPHIGH4 == 2 | BPHIGH4 == 4 , BPHIGH4 := 1] 
+
+# Convert no High BP to 0 
+data[BPHIGH4 == 3, BPHIGH4 := 0]
+
+# Convert Not sure to NA
+data[BPHIGH4 == 7 | BPHIGH4 == 9, BPHIGH4 := NA]
+
+data$BPHIGH4 <- factor(data$BPHIGH4) # BPHIGH4 is a factor variable
+
+summary(data$BPHIGH4)
+
+
+### TOLDHI2 ###
+summary(data$TOLDHI2)
+
+# Convert No to 0
+data[TOLDHI2 == 2, TOLDHI2 := 0]
+
+# Convert Not sure or refused to answer to NA
+data[TOLDHI2 == 7 | TOLDHI2 == 9, TOLDHI2 := NA]
+
+data$TOLDHI2 <- factor(data$TOLDHI2) # TOLDHI2 is a factor variable
+
+summary(data$TOLDHI2)
+
+
+### CHOLCHK2 ###
+summary(data$CHOLCHK2)
+
+
+
+
+
+
+
+
+
+
+
+######################### Cleaning of non-medical data #################
 # Analysis of variables 
 # Jeremy - 'SEXVAR','GENHLTH','PHYSHLTH','MENTHLTH','POORHLTH','HLTHPLN1','PERSDOC2','MEDCOST','CHECKUP1'
 demo_first_set_names <- 
