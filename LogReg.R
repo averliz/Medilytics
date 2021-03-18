@@ -4,7 +4,7 @@ library(car)
 library(data.table)
 library(skimr)
 setwd("C:/Users/jimmy/NTU/BC2407/Project")
-data <- fread("CleanedData_medical_nonmedical.csv")
+data <- fread("FinalCleanedData.csv")
 
 for (col in names(data)) {
   set(data, j = col, value = as.factor(data[[col]]))
