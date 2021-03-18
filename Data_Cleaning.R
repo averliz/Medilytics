@@ -1,7 +1,8 @@
 library('data.table')
-
+library('dplyr')
+setwd("C:/Users/mhenn/Documents/Programming/Academic/BC2407 Medilytics")
 ### EXTRACTING RELEVANT COLUMNS ###
-data <- fread("data.csv")
+data <- fread("dataset.csv")
 relevantcols <- fread('RelevantColumns.csv') # a .csv of the original file, with the redundant rows removed
 relevantVariableNames <- c(relevantcols$`SAS Variable Name`)
 as.data.frame(relevantVariableNames)
@@ -322,11 +323,19 @@ str(data[,..factorvars])
 # 101-199: 1-99 times per week
 # 201-299: 1-99 times per month
 # 888: never (aka 0)
+# We take times per week and multiply by 4 to get times per month
+# forms a continuous variable with 0 if never worked out at all
+# and a numeric value signifying the amount of work done per month
 
 data[STRENGTH == 999, STRENGTH := NA] #refused
 data[STRENGTH == 777, STRENGTH := NA] #not sure
 data[STRENGTH == 200, STRENGTH := NA] #no meaning for this number
-data$STRENGTH <- factor(data$STRENGTH)
+
+data[STRENGTH >= 101 | STRENGTH <= 199, STRENGTH := (STRENGTH - 100) * 4]
+data[STRENGTH >= 201 | STRENGTH <= 299, STRENGTH := STRENGTH - 200]
+data[STRENGTH == 888, STRENGTH := 0]
+
+# Numeric value - don't factorize
 summary(data$STRENGTH)
 
 # FRUIT2
