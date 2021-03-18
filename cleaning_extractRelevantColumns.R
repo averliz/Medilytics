@@ -1,4 +1,5 @@
 library(dplyr)
+library(data.table)
 
 data <- fread('dataset.csv') # very taxing procedure
 # summary(data)
