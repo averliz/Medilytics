@@ -297,4 +297,4 @@ data[HIVRISK5 == 7, HIVRISK5 := NA] #not sure
 data$HIVRISK5 <- factor(data$HIVRISK5)
 summary(data$HIVRISK5)
 
-write.csv(data, "CleanedData_nonmedical.csv") # write all the data to a .csv for analysis
+write.csv(data, "CleanedData_nonmedical.csv",row.names = FALSE) # write all the data to a .csv for analysis

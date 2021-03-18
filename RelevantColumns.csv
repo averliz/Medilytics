@@ -32,14 +32,9 @@ PREGNANT,Demographic - Pregnant?
 DEAF,Demographic
 BLIND,Demographic
 SMOKE100,Demographic - Smoked 100 packs total?
-SMOKDAY2,Demographic - Current smoker?
-LASTSMK2,Demographic - When was latest cigarette?
 USENOW3,Demographic - Consume Smokeless Tobacco?
 ALCDAY5,Demographic - How many days per week or month did you consume alcoholic beverage?
-AVEDRNK3,"Demographic - On the days you drank, what was the average number of drinks?"
-DRNK3GE5,Demographic - Hw many times did you drink more than 5 drinks (men) or 4 (women) // How many times did you get wasted?
 EXERANY2,Demographic - Any Exercise?
-EXRACT11,Demographic - What type of physical activity did you spend the most time doing the past month?
 STRENGTH,Demographic - How often did you engage in muscle strengthening activities?
 FRUIT2,Demographic - How often did you eat fruit?
 FRUITJU2,Demographic - How many times did you drink pure fruit juices?

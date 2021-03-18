@@ -1,5 +1,5 @@
-data <- fread("CleanedData.csv")
 library('data.table')
+data <- fread("CleanedData.csv")
 
 # RFHYPE5
 # RFCHOL2
@@ -93,4 +93,4 @@ data[CHCCOPD2 == 7 | CHCCOPD2 == 9, CHCCOPD2 := NA] # Refused/Unsure
 data$CHCCOPD2 <- factor(data$CHCCOPD2) # TOLDHI2 is a factor variable
 summary(data$CHCCOPD2)
 
-write.csv(data, "CleanedData_medical.csv")
+write.csv(data, "CleanedData_medical.csv",row.names = FALSE)
