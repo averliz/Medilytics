@@ -118,16 +118,22 @@ data[GENHLTH == 9 | GENHLTH == 7, GENHLTH := NA]
 ### PHYS14D ###
 # Convert value = 88 to 0 as NONE 
 data[PHYS14D == 9, PHYS14D := NA]
+data[PHYS14D == 1, PHYS14D := 0]
+data[PHYS14D == 2, PHYS14D := 1]
+data[PHYS14D == 3, PHYS14D := 2]
 
 ### MENT14D ### 
 # Convert 88 to 0 -> no days with bad MENTH
 data[MENT14D == 9, MENT14D := NA]
+data[MENT14D == 1, MENT14D := 0]
+data[MENT14D == 2, MENT14D := 1]
+data[MENT14D == 3, MENT14D := 2]
 
 ### POORHLTH ###
 # Convert value = 88 to 0 as NONE 
 data[POORHLTH == 88, POORHLTH := 0]
 # Convert POORHLTH NA values to 0 when PHYSHLTH and MENTHLTH == 0 
-data[is.na(POORHLTH) & PHYSHLTH == 0 & MENTHLTH == 0, POORHLTH := 0]
+data[is.na(POORHLTH) & PHYS14D == 0 & MENT14D == 0, POORHLTH := 0]
 # Convert POORHLTH 77 and 99 values to NA for MICE
 data[POORHLTH == 77 | POORHLTH == 99, POORHLTH := NA]
 
@@ -265,6 +271,33 @@ data[,VEGEDA2 := VEGEDA2/100]
 # HIVRISK5 (Categorical / Binary)
 data[HIVRISK5 == 9, HIVRISK5 := NA] #refused
 data[HIVRISK5 == 7, HIVRISK5 := NA] #not sure
+
+### FINAL CLEANING TO REMOVE ALL NA ROWS ###
+
+all_variables <- names(data)
+
+numeric_variables <- c("POORHLTH",
+                       "WTKG3", 
+                       "HTM4",
+                       "STRFREQ",
+                       "FRUTDA2",
+                       "FTJUDA2",
+                       "GRENDA1",
+                       "FRNCHDA",
+                       "POTADA1",
+                       "VEGEDA2"
+)
+
+factor_variables <- setdiff(all_variables, numeric_variables)
+
+for (variable in factor_variables) {
+  set(data, j = variable, value = as.factor(data[[variable]]))
+}
+
+# perform sanity check on variables - make sure factor levels are accurate
+str(data)
+
+data <- na.omit(data) # all in all, there are 230423 observations with no NA values in them at all
 
 
 write.csv(data, "FinalCleanedData.csv",row.names = FALSE) # write all the data to a .csv for analysis
