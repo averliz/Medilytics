@@ -12,8 +12,8 @@ DIABETE4,Dependent Variable for Diabetes
 _DRDXAR2,Dependent Variable for Arthritis
 SEXVAR,Demographic - Sex
 GENHLTH,Health Indicator
-PHYSHLTH,Health Indicator
-MENTHLTH,Health Indicator
+_PHYS14D,Health Indicator
+_MENT14D,Health Indicator
 POORHLTH,Health Indicator
 HLTHPLN1,Demographic - Healthcare access
 PERSDOC2,Demographic - Healthcare professionals
@@ -24,22 +24,21 @@ EDUCA,Demographic - Education level
 RENTHOM1,Demographic - Own or rent home
 VETERAN3,Demographic - Veteran?
 EMPLOY1,Demographic - Employment status
-CHILDREN,Demographic - Number of children
+_CHLDCNT,Demographic - Number of children
 INCOME2,Demographic - Annual household income
-WEIGHT2,Demographic - Weight
-HEIGHT3,Demographic - Height
+WTKG3,Demographic - Weight
+HTM4,Demographic - Height
 PREGNANT,Demographic - Pregnant?
 DEAF,Demographic
 BLIND,Demographic
-SMOKE100,Demographic - Smoked 100 packs total?
-USENOW3,Demographic - Consume Smokeless Tobacco?
-ALCDAY5,Demographic - How many days per week or month did you consume alcoholic beverage?
-EXERANY2,Demographic - Any Exercise?
-STRENGTH,Demographic - How often did you engage in muscle strengthening activities?
-FRUIT2,Demographic - How often did you eat fruit?
-FRUITJU2,Demographic - How many times did you drink pure fruit juices?
-FVGREEN1,Demographic - Eat dark green vegetables
-FRENCHF1,Demographic - How often fried potato
-POTATOE1,Demographic - How often any non fried potato
-VEGETAB2,Demographic - How often other vegetables (excluding lettuce and salads)
+_RFSMOK3,Demographic - Current Smoker?
+_RFDRHV7,Demographic - Heavy Drinker?
+_TOTINDA,Demographic - Any Exercise?
+STRFREQ_,Demographic - How often did you engage in muscle strengthening activities?
+FRUTDA2_,Demographic - How often did you eat fruit?
+FTJUDA2_,Demographic - How many times did you drink pure fruit juices?
+GRENDA1_,Demographic - Eat dark green vegetables
+FRNCHDA_,Demographic - How often fried potato
+POTADA1_,Demographic - How often any non fried potato
+VEGEDA2_,Demographic - How often other vegetables (excluding lettuce and salads)
 HIVRISK5,Demographic - Risk of HIV
