@@ -1,6 +1,5 @@
 library('data.table')
 library('dplyr')
-setwd("C:/Users/mhenn/Documents/Programming/Academic/BC2407 Medilytics")
 
 ### EXTRACTING RELEVANT COLUMNS ###
 data <- fread("dataset.csv") # original dataset - massive file
