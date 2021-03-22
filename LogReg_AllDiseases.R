@@ -2,7 +2,11 @@ library(data.table)
 library(caTools)
 library(car)
 library(dplyr)
-setwd("C:/Users/mhenn/Documents/Programming/Academic/BC2407 Medilytics")
+library(DMwR) # for SMOTE
+# setwd("C:/Users/mhenn/Documents/Programming/Academic/BC2407 Medilytics")
+setwd("C:/Users/jimmy/NTU/BC2407/Project")
+set.seed(2407)
+
 ### Read in data and factorize the relevant variables ###
 resetData <- function() {
   data <- fread("FinalCleanedData.csv")
@@ -50,18 +54,28 @@ runLogRegModel <- function(chosen_disease) {
                   "TOTINDA", "STRFREQ", "FRUTDA2", 'FTJUDA2', "GRENDA1", "FRNCHDA", 
                   "POTADA1", "VEGEDA2", "HIVRISK5" )
   
-  data_subset <- data[, ..interest_cols]
-  positiveDiseaseData <- data_subset[DISEASE == 1]
-  negativeDiseaseData <- data_subset[DISEASE == 0][sample(.N, nrow(positiveDiseaseData))]
+  # data_subset <- data[, ..interest_cols]
+  # positiveDiseaseData <- data_subset[DISEASE == 1]
+  # negativeDiseaseData <- data_subset[DISEASE == 0][sample(.N, nrow(positiveDiseaseData))]
   # for logistic regression, it is important to obtain an unbiased set of data
   # this means we obtain a set of data with equal proportions of positive and
   # negative disease status
-  disease_data <- merge(positiveDiseaseData, negativeDiseaseData, all = TRUE)
+  # disease_data <- merge(positiveDiseaseData, negativeDiseaseData, all = TRUE)
   
   # create training and testing sets with an equal number of positive and negative stroke cases
-  train <- sample.split(Y = disease_data$DISEASE, SplitRatio = 0.7)
-  trainset <- subset(disease_data, train == T)
-  testset <- subset(disease_data, train == F)
+  # train <- sample.split(Y = disease_data$DISEASE, SplitRatio = 0.7)
+  # trainset <- subset(disease_data, train == T)
+  # testset <- subset(disease_data, train == F)
+
+  # create train and test sets with equal proportions of 1's and 0's using SMOTE
+  train_test_split <- sample.split(data$DISEASE, SplitRatio = 0.7)
+  trainset.ori <- subset(data, train_test_split == T)
+  testset.ori <- subset(data, train_test_split == F)
+
+  trainset <- SMOTE(DISEASE ~ ., data = trainset.ori, 
+                        perc.over = 100, perc.under = 200)
+  testset <- SMOTE(DISEASE ~ ., data = testset.ori, 
+                        perc.over = 100, perc.under = 200)
   
   fitAll <- glm(DISEASE ~ SEXVAR + GENHLTH + PHYS14D + MENT14D + POORHLTH + 
                   HLTHPLN1 + PERSDOC2 + MEDCOST + CHECKUP1 + MARITAL + EDUCA + 
