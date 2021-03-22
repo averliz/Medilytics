@@ -168,10 +168,18 @@ m1_rose <- glm(MICHD ~ SEXVAR + GENHLTH + PHYS14D + MENT14D + POORHLTH
                  GRENDA1 + FRNCHDA + POTADA1 + VEGEDA2 + HIVRISK5, 
                data = rose.trainset, family = "binomial")
 
+m1_smote <- glm(MICHD ~ SEXVAR + GENHLTH + PHYS14D + MENT14D + POORHLTH 
+               + HLTHPLN1 + PERSDOC2 + MEDCOST + CHECKUP1 + MARITAL + EDUCA + RENTHOM1 + 
+                 VETERAN3 + EMPLOY1 + CHLDCNT + INCOME2 + WTKG3 + HTM4 + PREGNANT + DEAF + 
+                 BLIND + RFSMOK3 + RFDRHV7 + TOTINDA + STRFREQ + FRUTDA2 + FTJUDA2 + 
+                 GRENDA1 + FRNCHDA + POTADA1 + VEGEDA2 + HIVRISK5, 
+               data = smote.trainset, family = "binomial")
+
 #Take a look at model coefficients and add odds ratio for interpretability
 summary(m1_under)
 summary(m1_over)
 summary(m1_rose)
+summary(m1_smote)
 
 # Let us now use stepwise regression to optimise the model 
 # om1 - optimised model for model 1 
@@ -183,25 +191,25 @@ summary(m1_rose)
 # Is there a difference in the optimised model vs original model?
 # Let us take a look at the number of predictors. 
 
-# Number of predictors for original model - m1_heart
-length(coef(m1_heart)) - 1  #-1 for intercept || 66 Predictors
-
-# Number of predictors for optimised model - om1_heart
-length(coef(om1_heart)) - 1  #-1 for intercept || 54 Predictors
-
-# Let us take a look at the odds ratio of the model 
-# OR <- exp(coef(om1_heart))
-# OR
-OR_under <- exp(coef(m1_under))
-OR_under
-OR_over <- exp(coef(m1_over))
-OR_over
-# Interesting note: GENHLTH 1-5 increasing in odds ratio 
-
-# Let us take a look at the collinearity.    
-# vif(om1_heart) # Note all var < 5. No issue of collinearity.
-vif(m1_under)
-vif(m1_over)
+# # Number of predictors for original model - m1_heart
+# length(coef(m1_heart)) - 1  #-1 for intercept || 66 Predictors
+# 
+# # Number of predictors for optimised model - om1_heart
+# length(coef(om1_heart)) - 1  #-1 for intercept || 54 Predictors
+# 
+# # Let us take a look at the odds ratio of the model 
+# # OR <- exp(coef(om1_heart))
+# # OR
+# OR_under <- exp(coef(m1_under))
+# OR_under
+# OR_over <- exp(coef(m1_over))
+# OR_over
+# # Interesting note: GENHLTH 1-5 increasing in odds ratio 
+# 
+# # Let us take a look at the collinearity.    
+# # vif(om1_heart) # Note all var < 5. No issue of collinearity.
+# vif(m1_under)
+# vif(m1_over)
 
 ##### Prediction on trainset #####
 ## undersampling ##
@@ -236,6 +244,14 @@ table_rose <- table(rose.trainset$MICHD, MICHD.hat_rose)
 table_rose
 prop.table(table_rose)
 
+## smote ##
+pred_smote_train <- predict(m1_smote, type = 'response')
+threshold_smote <- sum(smote.trainset$MICHD == 1)/length(smote.trainset$MICHD)
+MICHD.hat_smote <- ifelse(pred_smote_train > threshold_smote, 1, 0)
+table_smote <- table(smote.trainset$MICHD, MICHD.hat_smote)
+table_smote
+prop.table(table_smote)
+
 ##### Prediction on testset #####
 
 ## Undersampling ##
@@ -265,10 +281,20 @@ prop.table(rose.con.matrix.test)
 # Test set accuracy 
 mean(predict.rose.MICHD.test == rose.testset$MICHD)
 
+## ROSE ## 
+prob.smote.test <- predict(m1_smote, newdata = smote.testset, type = 'response')
+predict.smote.MICHD.test <- ifelse(prob.smote.test > threshold_smote, 1, 0)
+smote.con.matrix.test <- table(smote.testset$MICHD, predict.smote.MICHD.test)
+smote.con.matrix.test
+prop.table(smote.con.matrix.test)
+# Test set accuracy 
+mean(predict.smote.MICHD.test == smote.testset$MICHD)
+
 
 roc.curve(under.testset$MICHD, prob.under.test)
 roc.curve(over.testset$MICHD, prob.over.test)
 roc.curve(rose.testset$MICHD, prob.rose.test)
+roc.curve(smote.testset$MICHD, prob.smote.test)
 over.holdout <- ROSE.eval(MICHD ~ ., data = over.testset, 
                           learner = glm, method.assess = "holdout", 
                           control.learner=list(family=binomial), seed=1)
@@ -279,8 +305,8 @@ ROSE.holdout <- ROSE.eval(MICHD ~ ., data = rose.testset,
 ROSE.holdout
 
 # Overall accuracy 
-prob <- predict.glm(m1_over, newdata = data, type = 'response')
-y.hat <- ifelse(prob > threshold, 1, 0)
+prob <- predict.glm(m1_smote, newdata = data, type = 'response')
+y.hat <- ifelse(prob > threshold_smote, 1, 0)
 table(data$MICHD, y.hat, deparse.level = 2)
 overall_accuracy <- mean(y.hat == data$MICHD) # 73% overall accuracy
 overall_accuracy
