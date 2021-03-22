@@ -3,6 +3,7 @@ library(caTools)
 library(car)
 library(dplyr)
 library(DMwR) # for SMOTE
+library(ROSE) # for Rose 
 # setwd("C:/Users/mhenn/Documents/Programming/Academic/BC2407 Medilytics")
 setwd("C:/Users/jimmy/NTU/BC2407/Project")
 set.seed(2407)
@@ -67,16 +68,21 @@ runLogRegModel <- function(chosen_disease) {
   # trainset <- subset(disease_data, train == T)
   # testset <- subset(disease_data, train == F)
 
-  # create train and test sets with equal proportions of 1's and 0's using SMOTE
+  # create train and test sets with equal proportions of 1's and 0's using 
   train_test_split <- sample.split(data$DISEASE, SplitRatio = 0.7)
   trainset.ori <- subset(data, train_test_split == T)
   testset.ori <- subset(data, train_test_split == F)
-
-  trainset <- SMOTE(DISEASE ~ ., data = trainset.ori, 
+  
+  ### SMOTE ### - highest accuracy rate. 
+  trainset <- SMOTE(DISEASE ~ ., data = trainset.ori,
                         perc.over = 100, perc.under = 200)
-  testset <- SMOTE(DISEASE ~ ., data = testset.ori, 
+  testset <- SMOTE(DISEASE ~ ., data = testset.ori,
                         perc.over = 100, perc.under = 200)
   
+  ### ROSE ### - can keep for comparison 
+  # trainset <- ROSE(DISEASE ~ ., data = trainset.ori,seed = 2407)$data
+  # testset <- ROSE(DISEASE ~ ., data = testset.ori,seed = 2407)$data
+
   fitAll <- glm(DISEASE ~ SEXVAR + GENHLTH + PHYS14D + MENT14D + POORHLTH + 
                   HLTHPLN1 + PERSDOC2 + MEDCOST + CHECKUP1 + MARITAL + EDUCA + 
                   RENTHOM1 + VETERAN3 + EMPLOY1 + CHLDCNT + INCOME2 + WTKG3 + 
@@ -93,7 +99,8 @@ runLogRegModel <- function(chosen_disease) {
   
   # model prediction on train set
   prob <- predict(m1, type = 'response')
-  threshold <- 0.5
+  # threshold <- 0.5
+  threshold <- sum(trainset$DISEASE == 1)/length(trainset$DISEASE)
   y.hat <- ifelse(prob > threshold, 1, 0)
   table(trainset$DISEASE, y.hat, deparse.level = 2)
   train_accuracy <- mean(y.hat == trainset$DISEASE) # 74% accuracy on trainset
@@ -135,5 +142,5 @@ for (disease in disease_list) {
 
 
 
-
+  
 
