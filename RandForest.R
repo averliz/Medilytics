@@ -73,21 +73,30 @@ prop.table(table(smote.trainset$MICHD))
 prop.table(table(smote.testset$MICHD))
 
 
-rf <- randomForest(MICHD ~ SEXVAR + GENHLTH + PHYS14D + MENT14D + POORHLTH + 
+rf1 <- randomForest(MICHD ~ SEXVAR + GENHLTH + PHYS14D + MENT14D + POORHLTH + 
                      HLTHPLN1 + PERSDOC2 + MEDCOST + CHECKUP1 + MARITAL + EDUCA + 
                      RENTHOM1 + VETERAN3 + EMPLOY1 + CHLDCNT + INCOME2 + WTKG3 + 
                      HTM4 + DEAF + BLIND + RFSMOK3 + RFDRHV7 + 
                      TOTINDA + STRFREQ + FRUTDA2 + FTJUDA2 + GRENDA1 + FRNCHDA + 
-                     POTADA1 + VEGEDA2 + HIVRISK5, data = smote.trainset)
+                     POTADA1 + VEGEDA2 + HIVRISK5, data = smote.trainset, 
+                   ntree = 1000, importance = T)
 
-pred = predict(rf, newdata=smote.testset)
+rf1
 
-cm = table(smote.testset$MICHD, pred)
+# Predicting on train set
+predTrain <- predict(rf, smote.trainset, type = "class")
+# Checking classification accuracy
+table(predTrain, smote.trainset$MICHD) 
 
-test_accuracy <- mean(pred == smote.testset$MICHD) # 74% accuracy on trainset
-test_accuracy
+# Predicting on Validation set
+predTest <- predict(rf, smote.testset, type = "class")
+# Checking classification accuracy
+mean(predTest == smote.testset$MICHD)    
+table(predTest,smote.testset$MICHD)
 
+# To check important variables
+var.impt.rf1 <- importance(rf1)
+var.impt.rf1
 
-
-
+varImpPlot(rf1, type = 1)
 
