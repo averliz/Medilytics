@@ -303,7 +303,7 @@ data[POTADA1 > 1, POTADA1 := NA]
 data[VEGEDA2 > 5, VEGEDA2 := NA]
 data <- na.omit(data)
 
-# all in all, there are 230423 observations with no NA values in them at all
+# all in all, there are 221k observations with no NA values in them at all
 
 
 write.csv(data, "FinalCleanedData.csv",row.names = FALSE) # write all the data to a .csv for analysis
