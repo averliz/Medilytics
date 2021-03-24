@@ -294,10 +294,16 @@ for (variable in factor_variables) {
   set(data, j = variable, value = as.factor(data[[variable]]))
 }
 
-# perform sanity check on variables - make sure factor levels are accurate
-str(data)
+data[STRFREQ > 7, STRFREQ := NA]
+data[FRUTDA2 > 5, FRUTDA2 := NA]
+data[FTJUDA2 > 3, FTJUDA2 := NA]
+data[GRENDA1 > 4, GRENDA1 := NA]
+data[FRNCHDA > 1, FRNCHDA := NA]
+data[POTADA1 > 1, POTADA1 := NA]
+data[VEGEDA2 > 5, VEGEDA2 := NA]
+data <- na.omit(data)
 
-data <- na.omit(data) # all in all, there are 230423 observations with no NA values in them at all
+# all in all, there are 230423 observations with no NA values in them at all
 
 
 write.csv(data, "FinalCleanedData.csv",row.names = FALSE) # write all the data to a .csv for analysis
