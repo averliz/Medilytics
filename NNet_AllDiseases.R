@@ -34,9 +34,10 @@ runNNetModel <- function(path, chosen_disease) {
   pure_y <- data$DISEASE
   
   # Training the NNET Model -------------------------------------------------
-  ctrl <- trainControl(method = "cv")
+  ctrl <- trainControl(method = "cv", search = 'grid')
+  nnet_grid <- expand.grid(.decay = c(0.5, 0.2, 0.1),.size = c(3, 5, 10))
   model_nnet <- train(train_x, train_y, method = 'nnet', metric = "Accuracy",
-                      trControl = ctrl)
+                      trControl = ctrl, tunegrid = nnet_grid, maxit = 200)
 
   # Getting results from model ----------------------------------------------
   results_train <- predict(model_nnet, newdata = train_x)
@@ -75,4 +76,4 @@ for (disease in disease_list) {
   NNetResults <- rbindlist(list(NNetResults, new_row), use.names = FALSE)
 }
 
-saveRDS(model_nnet, "PE_diabetes_smote85_model.rds")
+# saveRDS(model_nnet, "PE_diabetes_smote85_model.rds")
