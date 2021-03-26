@@ -5,12 +5,11 @@ library(performanceEstimation)
 library(caTools)
 
 source("functions.R")
-
+set.seed(1)
 runNNetModel <- function(path, chosen_disease) {
   # initialize and load data
   data <- readData(path, chosen_disease)
   data <- normalizeData(data)
-  
   
   
   getdata <- sample.split(Y = data$DISEASE, SplitRatio = 0.85) # use 15% of the data total
@@ -70,7 +69,6 @@ NNetResults <- data.table('Disease Name' = character(),
                           'FNR (All)' = numeric())
 
 disease_list = c("MICHD", "CHCCOPD2", "CHCKDNY2", "CVDSTRK3", "DIABETE4")
-
 for (disease in disease_list) {
   new_row <- runNNetModel("FinalCleanedData.csv", disease)
   NNetResults <- rbindlist(list(NNetResults, new_row), use.names = FALSE)
