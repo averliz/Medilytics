@@ -38,10 +38,13 @@ runRFModel <- function(chosen_disease) {
   ### SMOTE ### - highest accuracy rate. 
   trainset <- smote(DISEASE ~ ., data = trainset.ori,
                     perc.over = 1,k = 5, perc.under = 2)
-  # trainset <- readData("smotetrain_PE.csv", "MICHD")
+
   testset.smote <- smote(DISEASE ~ ., data = testset.ori,
                    perc.over = 1, k = 5, perc.under = 2)
-  # testset.smote <- readData("smotetest_PE.csv", "MICHD")
+
+  # trainset <- readDataOnly(paste("SmotedData/", chosen_disease, "_trainset_pe.csv",sep = ""))
+  # testset.smote <- readDataOnly(paste("SmotedData/", chosen_disease, "_testset_pe.csv",sep = ""))
+  
   testSplitRatio <- ((3/7)*nrow(trainset))/nrow(testset.ori)
   print(testSplitRatio)
   testset_split <- sample.split(testset.ori$DISEASE, SplitRatio = testSplitRatio)
@@ -54,25 +57,19 @@ runRFModel <- function(chosen_disease) {
   print(prop.table(table(testset.scaled$DISEASE)))
   set.seed(2407)
  
-  # rf <- randomForest(DISEASE ~ SEXVAR + GENHLTH + PHYS14D + MENT14D + POORHLTH + 
-  #                 HLTHPLN1 + PERSDOC2 + MEDCOST + CHECKUP1 + MARITAL + EDUCA + 
-  #                 RENTHOM1 + VETERAN3 + EMPLOY1 + CHLDCNT + INCOME2 + WTKG3 + 
-  #                 HTM4 + DEAF + BLIND + RFSMOK3 + RFDRHV7 + 
-  #                 TOTINDA + STRFREQ + FRUTDA2 + FTJUDA2 + GRENDA1 + FRNCHDA + 
-  #                 POTADA1 + VEGEDA2 + HIVRISK5, data = trainset,  importance= T)
-  
-  # print(rf)
-
-  # Tune the Random Forest Model - find optimal mtry and optimal ntrees
+  # Tune the Random Forest Model - 
+  # Use TuneRF to obtain the optimum RF model 
+  #   "doBest = TRUE" -> returns the model 
   set.seed(2407)
-  op.rf <- tuneRF(x = trainset[,c(2:32)],
-              y = trainset$DISEASE,
-              ntreeTry = 1000,
-              mtryStart = 5,
-              stepFactor = 1.5,
-              improve    = 0.01,
-              doBest = TRUE
-  )
+  # op.rf <- tuneRF(x = trainset[,c(2:32)],
+  #             y = trainset$DISEASE,
+  #             ntreeTry = 1000,
+  #             mtryStart = 5,
+  #             stepFactor = 1.5,
+  #             improve    = 0.01,
+  #             doBest = TRUE
+  # )
+  
   
   # optimum m-try (tuneRF)
   # MICHD - mtry = 4 
@@ -81,11 +78,6 @@ runRFModel <- function(chosen_disease) {
   # CVDSTRK3 - mtry = 5 
   # DIABETE4 - mtry = 4
   
-  
-  # mtry
-  # print(mtry)
-  # op.mtry <- mtry[mtry[, 2] == min(mtry[, 2]), 1]
-  # print(op.mtry)
 
   # op.rf <-randomForest(DISEASE ~ SEXVAR + GENHLTH + PHYS14D + MENT14D + POORHLTH +
   #                 HLTHPLN1 + PERSDOC2 + MEDCOST + CHECKUP1 + MARITAL + EDUCA +
@@ -94,9 +86,11 @@ runRFModel <- function(chosen_disease) {
   #                 TOTINDA + STRFREQ + FRUTDA2 + FTJUDA2 + GRENDA1 + FRNCHDA +
   #                 POTADA1 + VEGEDA2 + HIVRISK5, data = trainset,
   #                 mtry=op.mtry, importance=T,ntree=500)
-  # op.rf <- readRDS("opRandForest_mtry_4.rds")
   
-  print(op.rf)
+  # saveRDS(op.rf, paste("Models/", chosen_disease, "_RF_.rds",sep = ""))
+  op.rf <- readRDS(paste("RF_Models/", chosen_disease, "_RF_.rds",sep = ""))
+  
+  
   #Evaluate variable importance
   importance(op.rf)
   varImpPlot(op.rf)
@@ -167,7 +161,7 @@ RandForestResults <- data.table('Disease Name' = character(),
                             'FNR (Overall)' = numeric())
 
 # list of diseases to parse through the model
-disease_list = c("DIABETE4") #"MICHD", "CHCCOPD2", "CHCKDNY2", "CVDSTRK3",
+disease_list = c("MICHD", "CHCCOPD2", "CHCKDNY2", "CVDSTRK3", "DIABETE4")
 
 # Start the clock!
 ptm <- proc.time()
