@@ -41,6 +41,34 @@ readData <- function(path, chosen_disease) {
   
   return(data)
 }
+
+readDataOnly <- function(path) {
+  data <- fread(path)
+  
+  all_variables <- names(data)
+  
+  numeric_variables <- c("POORHLTH",
+                         "WTKG3", 
+                         "HTM4",
+                         "STRFREQ",
+                         "FRUTDA2",
+                         "FTJUDA2",
+                         "GRENDA1",
+                         "FRNCHDA",
+                         "POTADA1",
+                         "VEGEDA2"
+  )
+  
+  factor_variables <- setdiff(all_variables, numeric_variables)
+  
+  # factorizing relevant variables
+  for (variable in factor_variables) {
+    set(data, j = variable, value = as.factor(data[[variable]]))
+  }
+  
+  return(data)
+}
+
 normalizeData <- function(data) {
   # normalizes all the data (necessary for a neural network)
   data[, WTKG3 := (WTKG3 - min(WTKG3))/(max(WTKG3) - min(WTKG3))]
@@ -55,4 +83,10 @@ normalizeData <- function(data) {
   data[, POORHLTH := (POORHLTH - min(POORHLTH))/(max(POORHLTH) - min(POORHLTH))]
   
   return(data)
+}
+
+fnr <- function(confusionMatrix) {
+  rate <- 
+    confusionMatrix$table[1,2]/(confusionMatrix$table[1,2] + confusionMatrix$table[2,2])
+  return(rate)
 }
