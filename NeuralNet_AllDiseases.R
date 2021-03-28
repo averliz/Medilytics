@@ -3,16 +3,20 @@ library(caret)
 library(dplyr)
 library(performanceEstimation)
 library(caTools)
+library(neuralnet)
 
 source("functions.R")
-set.seed(1)
 
 runNeuralNetModel <- function(path, chosen_disease) {
   
+  # ensure reproducibility
+  set.seed(1)
+  
+  # initialize and load data
   data <- readData(path, chosen_disease)
   data <- normalizeData(data)
   
-  getdata <- sample.split(Y = data$DISEASE, SplitRatio = 0.7) # use 10% of the data total
+  getdata <- sample.split(Y = data$DISEASE, SplitRatio = 0.85) # use 15% of the data total
   maindata <- subset(data, getdata == FALSE)
   train_test_split <- sample.split(Y = maindata$DISEASE, SplitRatio = 0.7)
   trainset.ori <- subset(maindata, train_test_split == TRUE)
@@ -52,13 +56,21 @@ runNeuralNetModel <- function(path, chosen_disease) {
   all_y <- as.numeric(data$DISEASE)
   all_x$DISEASE <- all_y
   all <- all_x
-  ################################################################################
-  model_neuralnet <- neuralnet(DISEASE ~ ., data = train, hidden = c(3,1), err.fct="ce",
-                               linear.output=FALSE, threshold = 0.1, lifesign = "full",
-                               stepmax = 1000000) 
-  # saveRDS(model_neuralnet, "neuralnet_smote.rds")
+  #############################################################################3,1#
+
+  # Train model -------------------------------------------------------------
+  # model_neuralnet <- neuralnet(DISEASE ~ ., data = train, hidden = c(2,1), err.fct="ce",
+  #                              linear.output=FALSE, threshold = 0.1, lifesign = "full",
+  #                              stepmax = 1000000)
+  # 
+  # saveRDS(model_neuralnet, paste("Models/", "NeuralNet_" , chosen_disease, ".rds", sep = ""))
   
-  # predict trainset
+
+  # Load model from file instead --------------------------------------------
+
+  model_neuralnet <- readRDS(paste("Models/", "NeuralNet_" , chosen_disease, ".rds", sep = ""))
+  
+  # Predict on trainset -----------------------------------------------------
   nn_results_train <- compute(model_neuralnet, subset(train, select = -c(DISEASE)))
   results_train <- data.frame(actual = train$DISEASE, prediction = nn_results_train$net.result)
   roundedresults<-sapply(results_train,round,digits=0)
@@ -70,7 +82,8 @@ runNeuralNetModel <- function(path, chosen_disease) {
   accuracy_train <- correct_preds/total
   fnr_train <- results_train_data[2]/(results_train_data[2]+results_train_data[4])
   
-  # predict testset
+
+  # Predict on testset ------------------------------------------------------
   nn_results_test <- compute(model_neuralnet, subset(test, select = -c(DISEASE)))
   results_test <- data.frame(actual = test$DISEASE, prediction = nn_results_test$net.result)
   roundedresults <- sapply(results_test, round, digits = 0)
@@ -82,7 +95,8 @@ runNeuralNetModel <- function(path, chosen_disease) {
   accuracy_test <- correct_preds/total
   fnr_test <- results_test_data[2]/(results_test_data[2]+results_test_data[4])
   
-  # predict entire dataset
+
+  # Predict on entire dataset -----------------------------------------------
   nn_results_all <- compute(model_neuralnet, subset(all, select = -c(DISEASE)))
   results_all <- data.frame(actual = all$DISEASE, prediction = nn_results_all$net.result)                              
   roundedresults <- sapply(results_all, round, digits = 0)
@@ -113,5 +127,4 @@ for (disease in disease_list) {
   new_row <- runNeuralNetModel("FinalCleanedData.csv", disease)
   NeuralNetResults <- rbindlist(list(NeuralNetResults, new_row), use.names = FALSE)
 }
-
-
+print("Completed sequence - NeuralNet")

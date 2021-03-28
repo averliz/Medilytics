@@ -5,14 +5,18 @@ library(performanceEstimation)
 library(caTools)
 
 source("functions.R")
-set.seed(1)
+
 runNNetModel <- function(path, chosen_disease) {
+  
+  # ensure reproducibility
+  set.seed(1) 
+  
   # initialize and load data
   data <- readData(path, chosen_disease)
   data <- normalizeData(data)
   
   
-  getdata <- sample.split(Y = data$DISEASE, SplitRatio = 0.85) # use 15% of the data total
+  getdata <- sample.split(Y = data$DISEASE, SplitRatio = 0.7) # use 30% of the data total
   maindata <- subset(data, getdata == FALSE)
   train_test_split <- sample.split(Y = maindata$DISEASE, SplitRatio = 0.7)
   trainset.ori <- subset(maindata, train_test_split == TRUE)
@@ -33,10 +37,17 @@ runNNetModel <- function(path, chosen_disease) {
   pure_y <- data$DISEASE
   
   # Training the NNET Model -------------------------------------------------
-  ctrl <- trainControl(method = "cv", search = 'grid')
-  nnet_grid <- expand.grid(.decay = c(0.5, 0.2, 0.1),.size = c(3, 5, 10))
-  model_nnet <- train(train_x, train_y, method = 'nnet', metric = "Accuracy",
-                      trControl = ctrl, tunegrid = nnet_grid, maxit = 200)
+  # ctrl <- trainControl(method = "cv", search = 'grid')
+  # nnet_grid <- expand.grid(.decay = c(0.5, 0.2, 0.1),.size = c(3, 5, 10))
+  # model_nnet <- train(train_x, train_y, method = 'nnet', metric = "Accuracy",
+  #                     trControl = ctrl, tunegrid = nnet_grid, maxit = 200)
+  # 
+  # saveRDS(model_nnet, paste("Models/", "NNet_", chosen_disease, ".rds", sep = ""))
+
+
+  # Load NNet from file instead ---------------------------------------------
+
+  model_nnet <- readRDS(paste("Models/", "NNet_", chosen_disease, ".rds", sep = ""))
 
   # Getting results from model ----------------------------------------------
   results_train <- predict(model_nnet, newdata = train_x)
@@ -52,11 +63,11 @@ runNNetModel <- function(path, chosen_disease) {
   confusion_matrix_all$table
 
   new_row <- data.frame(chosen_disease, confusion_matrix_train$overall["Accuracy"],
-                        confusion_matrix_train$table[1,2]/confusion_matrix_train$table[2,2],
+                        confusion_matrix_train$table[1,2]/(confusion_matrix_train$table[2,2] + confusion_matrix_train$table[1,2]),
                         confusion_matrix_test$overall["Accuracy"],
-                        confusion_matrix_test$table[1,2]/confusion_matrix_test$table[2,2],
+                        confusion_matrix_test$table[1,2]/(confusion_matrix_test$table[2,2] + confusion_matrix_test$table[1,2]),
                         confusion_matrix_all$overall["Accuracy"],
-                        confusion_matrix_all$table[1,2]/confusion_matrix_all$table[2,2])
+                        confusion_matrix_all$table[1,2]/(confusion_matrix_all$table[2,2] + confusion_matrix_all$table[1,2]))
   return(new_row)
 }
 
@@ -73,5 +84,5 @@ for (disease in disease_list) {
   new_row <- runNNetModel("FinalCleanedData.csv", disease)
   NNetResults <- rbindlist(list(NNetResults, new_row), use.names = FALSE)
 }
+print("Completed sequence - NNet")
 
-# saveRDS(model_nnet, "PE_diabetes_smote85_model.rds")
