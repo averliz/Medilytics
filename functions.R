@@ -37,7 +37,7 @@ readData <- function(path, chosen_disease) {
                      "RENTHOM1", "VETERAN3", "EMPLOY1", "CHLDCNT", "INCOME2", "WTKG3", 
                      "HTM4", "PREGNANT", "DEAF", "BLIND", "RFSMOK3", "RFDRHV7", 
                      "TOTINDA", "STRFREQ", "FRUTDA2", 'FTJUDA2', "GRENDA1", "FRNCHDA", 
-                     "POTADA1", "VEGEDA2", "HIVRISK5", "AGE", "STATE" )
+                     "POTADA1", "VEGEDA2", "HIVRISK5", "AGE", "STATE", "RACE" )
   
   data <- data[, ..interest_cols]
   
