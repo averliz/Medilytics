@@ -1,5 +1,6 @@
 library(dplyr)
 library(data.table)
+library(pROC)
 readData <- function(path, chosen_disease) {
   data <- fread(path)
   
@@ -93,4 +94,9 @@ fnr <- function(confusionMatrix) {
   rate <- 
     confusionMatrix$table[1,2]/(confusionMatrix$table[1,2] + confusionMatrix$table[2,2])
   return(rate)
+}
+
+optimum_threshold_glm <- function(predict, response) {
+  r <- pROC::roc(response, predict)
+  r$thresholds[which.max(r$sensitivities + r$specificities)]
 }
