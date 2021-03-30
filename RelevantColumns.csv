@@ -28,6 +28,7 @@ _CHLDCNT,Demographic - Number of children
 INCOME2,Demographic - Annual household income
 WTKG3,Demographic - Weight
 HTM4,Demographic - Height
+PREGNANT,Demographic - Pregnant?
 DEAF,Demographic
 BLIND,Demographic
 _RFSMOK3,Demographic - Current Smoker?
