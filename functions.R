@@ -35,7 +35,7 @@ readData <- function(path, chosen_disease) {
   interest_cols <- c("DISEASE", "SEXVAR", "GENHLTH", "PHYS14D", "MENT14D", "POORHLTH", 
                      "HLTHPLN1", "PERSDOC2", "MEDCOST", "CHECKUP1", "MARITAL", "EDUCA", 
                      "RENTHOM1", "VETERAN3", "EMPLOY1", "CHLDCNT", "INCOME2", "WTKG3", 
-                     "HTM4", "DEAF", "BLIND", "RFSMOK3", "RFDRHV7", 
+                     "HTM4", "PREGNANT", "DEAF", "BLIND", "RFSMOK3", "RFDRHV7", 
                      "TOTINDA", "STRFREQ", "FRUTDA2", 'FTJUDA2', "GRENDA1", "FRNCHDA", 
                      "POTADA1", "VEGEDA2", "HIVRISK5", "AGE", "STATE" )
   
