@@ -14,7 +14,8 @@ readData <- function(path, chosen_disease) {
                          "GRENDA1",
                          "FRNCHDA",
                          "POTADA1",
-                         "VEGEDA2"
+                         "VEGEDA2",
+                         "AGE"
   )
   
   factor_variables <- setdiff(all_variables, numeric_variables)
@@ -35,7 +36,7 @@ readData <- function(path, chosen_disease) {
                      "RENTHOM1", "VETERAN3", "EMPLOY1", "CHLDCNT", "INCOME2", "WTKG3", 
                      "HTM4", "DEAF", "BLIND", "RFSMOK3", "RFDRHV7", 
                      "TOTINDA", "STRFREQ", "FRUTDA2", 'FTJUDA2', "GRENDA1", "FRNCHDA", 
-                     "POTADA1", "VEGEDA2", "HIVRISK5" )
+                     "POTADA1", "VEGEDA2", "HIVRISK5", "AGE", "STATE" )
   
   data <- data[, ..interest_cols]
   
@@ -56,7 +57,8 @@ readDataOnly <- function(path) {
                          "GRENDA1",
                          "FRNCHDA",
                          "POTADA1",
-                         "VEGEDA2"
+                         "VEGEDA2",
+                         "AGE"
   )
   
   factor_variables <- setdiff(all_variables, numeric_variables)
@@ -81,6 +83,8 @@ normalizeData <- function(data) {
   data[, POTADA1 := (POTADA1 - min(POTADA1))/(max(POTADA1) - min(POTADA1))]
   data[, VEGEDA2 := (VEGEDA2 - min(VEGEDA2))/(max(VEGEDA2) - min(VEGEDA2))]
   data[, POORHLTH := (POORHLTH - min(POORHLTH))/(max(POORHLTH) - min(POORHLTH))]
+  data[, AGE := (AGE - min(AGE))/(max(AGE) - min(AGE))]
+  
   
   return(data)
 }

@@ -1,3 +1,4 @@
+setwd("C:/Users/mhenn/Documents/Programming/Academic/BC2407 Medilytics")
 library('data.table')
 library('dplyr')
 
@@ -28,7 +29,9 @@ filtered_data <- filtered_data %>%
     'GRENDA1' = 'GRENDA1_',
     'FRNCHDA' = 'FRNCHDA_',
     'POTADA1' = 'POTADA1_',
-    'VEGEDA2' = 'VEGEDA2_'
+    'VEGEDA2' = 'VEGEDA2_',
+    'STATE' = '_STATE',
+    'AGE' = '_AGE80'
     
   )
 
@@ -272,9 +275,28 @@ data[,VEGEDA2 := VEGEDA2/100]
 data[HIVRISK5 == 9, HIVRISK5 := NA] #refused
 data[HIVRISK5 == 7, HIVRISK5 := NA] #not sure
 
+# STATE Data
+listOfStates = c('Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'District of Columbia',
+                 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
+                 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Mexico',
+                 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina',
+                 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming', 'Guam', 'Puerto Rico')
+
+rangeOfStates = c(1,2,4,5,6,8,9,10,11,12,13,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,35,36,37,38,39,40,41,
+                  42,44,45,46,47,48,49,50,51,53,54,55,56,66,72)
+
+
+data$STATE <- factor(data$STATE)
+i = 1
+for (number in rangeOfStates) {
+  data[STATE == number, STATE := listOfStates[i]]
+  i = i + 1
+}
+
 ### FINAL CLEANING TO REMOVE ALL NA ROWS ###
 
 all_variables <- names(data)
+
 
 numeric_variables <- c("POORHLTH",
                        "WTKG3", 
@@ -285,7 +307,8 @@ numeric_variables <- c("POORHLTH",
                        "GRENDA1",
                        "FRNCHDA",
                        "POTADA1",
-                       "VEGEDA2"
+                       "VEGEDA2",
+                       "AGE"
 )
 
 factor_variables <- setdiff(all_variables, numeric_variables)
@@ -304,6 +327,5 @@ data[VEGEDA2 > 5, VEGEDA2 := NA]
 data <- na.omit(data)
 
 # all in all, there are 221k observations with no NA values in them at all
-
 
 write.csv(data, "FinalCleanedData.csv",row.names = FALSE) # write all the data to a .csv for analysis
