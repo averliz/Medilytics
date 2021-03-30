@@ -277,22 +277,14 @@ data[HIVRISK5 == 7, HIVRISK5 := NA] #not sure
 
 # STATE Data
 data$STATE <- factor(data$STATE)
-listOfStates = c('Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'District of Columbia',
-                 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
-                 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Mexico',
-                 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina',
-                 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming', 'Guam', 'Puerto Rico')
 
-rangeOfStates = c(1,2,4,5,6,8,9,10,11,12,13,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,35,36,37,38,39,40,41,
-                  42,44,45,46,47,48,49,50,51,53,54,55,56,66,72)
-
-
-
+stateInfo <- fread("StateData.csv")
 i = 1
-for (number in rangeOfStates) {
-  data[STATE == number, STATE := listOfStates[i]]
+for (number in stateInfo$V1) {
+  data[STATE == number, STATE := stateInfo$V2[i]]
   i = i + 1
 }
+
 ### RACE ###
 data[RACE == 9, RACE := NA]
 ### FINAL CLEANING TO REMOVE ALL NA ROWS ###
@@ -328,4 +320,5 @@ data[POTADA1 > 1, POTADA1 := NA]
 data[VEGEDA2 > 5, VEGEDA2 := NA]
 data <- na.omit(data)
 # all in all, there are 215292 observations with no NA values in them at all
+
 write.csv(data, "FinalCleanedData.csv",row.names = FALSE) # write all the data to a .csv for analysis
