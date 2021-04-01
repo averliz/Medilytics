@@ -5,6 +5,8 @@ library(dplyr)
 library(performanceEstimation) # for SMOTE
 library(randomForest)
 library(ROSE) # for Rose 
+library(shapper)
+library(ggplot2)
 library(caret)
 # setwd("C:/Users/mhenn/Documents/Programming/Academic/BC2407 Medilytics")
 setwd("C:/Users/jimmy/NTU/BC2407/Project")
@@ -18,41 +20,25 @@ runRFModel <- function(chosen_disease) {
   # restore original data to initial, unaltered state
   data <- readData("FinalCleanedData.csv", chosen_disease)
   
+    # create train and test sets with equal proportions of 1's and 0's using 
+  train_test_split <- sample.split(data$DISEASE, SplitRatio = 0.7)
+  trainset.ori <- subset(data, train_test_split == T)
+  testset.ori <- subset(data, train_test_split == F)
   
-  # Get the relevant columns for the chosen disease prediction (all predictors)
-  
-  interest_cols <- c("DISEASE", "SEXVAR", "GENHLTH", "PHYS14D", "MENT14D", "POORHLTH", 
-                     "HLTHPLN1", "PERSDOC2", "MEDCOST", "CHECKUP1", "MARITAL", "EDUCA", 
-                     "RENTHOM1", "VETERAN3", "EMPLOY1", "CHLDCNT", "INCOME2", "WTKG3", 
-                     "HTM4", "DEAF", "BLIND", "RFSMOK3", "RFDRHV7", 
-                     "TOTINDA", "STRFREQ", "FRUTDA2", 'FTJUDA2', "GRENDA1", "FRNCHDA", 
-                     "POTADA1", "VEGEDA2", "HIVRISK5" )
-  
-  data_subset <- data[, ..interest_cols]
-
-  # create train and test sets with equal proportions of 1's and 0's using 
-  train_test_split <- sample.split(data_subset$DISEASE, SplitRatio = 0.7)
-  trainset.ori <- subset(data_subset, train_test_split == T)
-  testset.ori <- subset(data_subset, train_test_split == F)
-  
-  ### SMOTE ### - highest accuracy rate. 
+  ## SMOTE ### - highest accuracy rate.
   trainset <- smote(DISEASE ~ ., data = trainset.ori,
-                    perc.over = 1,k = 5, perc.under = 2)
-
-  testset.smote <- smote(DISEASE ~ ., data = testset.ori,
-                   perc.over = 1, k = 5, perc.under = 2)
+                    perc.over = 1,k = 6, perc.under = 2)
+  write.csv(trainset, paste("SmotedData/", chosen_disease, "_trainset_pe.csv",sep = ""), row.names = FALSE)
 
   # trainset <- readDataOnly(paste("SmotedData/", chosen_disease, "_trainset_pe.csv",sep = ""))
-  # testset.smote <- readDataOnly(paste("SmotedData/", chosen_disease, "_testset_pe.csv",sep = ""))
   
+
   testSplitRatio <- ((3/7)*nrow(trainset))/nrow(testset.ori)
   print(testSplitRatio)
   testset_split <- sample.split(testset.ori$DISEASE, SplitRatio = testSplitRatio)
   testset.scaled <- subset(testset.ori, testset_split == T)
   print(table(trainset$DISEASE))
   print(prop.table(table(trainset$DISEASE)))
-  print(table(testset.smote$DISEASE))
-  print(prop.table(table(testset.smote$DISEASE)))
   print(table(testset.scaled$DISEASE))
   print(prop.table(table(testset.scaled$DISEASE)))
   set.seed(2407)
@@ -61,15 +47,15 @@ runRFModel <- function(chosen_disease) {
   # Use TuneRF to obtain the optimum RF model 
   #   "doBest = TRUE" -> returns the model 
   set.seed(2407)
-  # op.rf <- tuneRF(x = trainset[,c(2:32)],
-  #             y = trainset$DISEASE,
-  #             ntreeTry = 1000,
-  #             mtryStart = 5,
-  #             stepFactor = 1.5,
-  #             improve    = 0.01,
-  #             doBest = TRUE
-  # )
-  
+  mtry <- tuneRF(x = trainset[,c(2:36)],
+              y = trainset$DISEASE,
+              ntreeTry = 1000,
+              mtryStart = 5,
+              stepFactor = 1.5,
+              improve    = 0.01
+  )
+  op.mtry <- mtry[mtry[, 2] == min(mtry[, 2]), 1]
+
   
   # optimum m-try (tuneRF)
   # MICHD - mtry = 4 
@@ -79,21 +65,39 @@ runRFModel <- function(chosen_disease) {
   # DIABETE4 - mtry = 4
   
 
-  # op.rf <-randomForest(DISEASE ~ SEXVAR + GENHLTH + PHYS14D + MENT14D + POORHLTH +
-  #                 HLTHPLN1 + PERSDOC2 + MEDCOST + CHECKUP1 + MARITAL + EDUCA +
-  #                 RENTHOM1 + VETERAN3 + EMPLOY1 + CHLDCNT + INCOME2 + WTKG3 +
-  #                 HTM4 + DEAF + BLIND + RFSMOK3 + RFDRHV7 +
-  #                 TOTINDA + STRFREQ + FRUTDA2 + FTJUDA2 + GRENDA1 + FRNCHDA +
-  #                 POTADA1 + VEGEDA2 + HIVRISK5, data = trainset,
-  #                 mtry=op.mtry, importance=T,ntree=500)
+op.rf <-randomForest(DISEASE ~ SEXVAR + GENHLTH + PHYS14D + MENT14D + POORHLTH +
+                HLTHPLN1 + PERSDOC2 + MEDCOST + CHECKUP1 + MARITAL + EDUCA +
+                RENTHOM1 + VETERAN3 + EMPLOY1 + CHLDCNT + INCOME2 + WTKG3 +
+                HTM4 + DEAF + BLIND + RFSMOK3 + RFDRHV7 +
+                TOTINDA + STRFREQ + FRUTDA2 + FTJUDA2 + GRENDA1 + FRNCHDA +
+                POTADA1 + VEGEDA2 + HIVRISK5, data = trainset,
+                mtry=op.mtry, importance=T,ntree=1000) # CHANGE ntree
   
-  # saveRDS(op.rf, paste("Models/", chosen_disease, "_RF_.rds",sep = ""))
-  op.rf <- readRDS(paste("RF_Models/", chosen_disease, "_RF_.rds",sep = ""))
+  saveRDS(op.rf, paste("Models/", chosen_disease, "_RF_.rds",sep = ""))
+  # op.rf <- readRDS(paste("Models/", chosen_disease, "_RF_.rds",sep = ""))
   
   
   #Evaluate variable importance
   importance(op.rf)
-  varImpPlot(op.rf)
+  # make dataframe from importance() output
+  var_imp_df <- importance(op.rf) %>% 
+    data.frame() %>% 
+    mutate(feature = row.names(.)) 
+  
+  # plot Var Importance 
+  varImptPlot <- ggplot(var_imp_df, aes(x = reorder(feature, MeanDecreaseAccuracy ), 
+                         y = MeanDecreaseAccuracy )) +
+    geom_bar(stat='identity') +
+    coord_flip() +
+    theme_classic() +
+    labs(
+      x     = chosen_disease,
+      y     = "MeanDecreaseAccuracy",
+      title = paste("Variable Importance for ", chosen_disease, sep = "")
+    )
+  print(varImptPlot)
+  ggsave(paste("RFPlots/", chosen_disease, "_VarImpPlot.png",sep = ""))
+  
 
   # Predicting on train set
   predTrain <- predict(op.rf, trainset)
@@ -103,14 +107,14 @@ runRFModel <- function(chosen_disease) {
   print(train_accuracy)
   fnr_train <- fnr(train_cf)
     
-  # Predicting on test set - smote
-  predTestSmote <- predict(op.rf, testset.smote)
+  # Predicting on test set - Unscaled 
+  predTest <- predict(op.rf, testset.ori)
   # Checking classification accuracy
-  test_smote_cf <- confusionMatrix(predTestSmote, testset.smote$DISEASE)
-  test_smote_accuracy <- test_smote_cf$overall[1]
-  print(test_smote_accuracy)
-  fnr_test_smote <- fnr(test_smote_cf)
-
+  test_cf <- confusionMatrix(predTest, testset.ori$DISEASE)
+  test_accuracy <- test_cf$overall[1]
+  print(test_accuracy)
+  fnr_test <- fnr(test_cf)
+  
   # Predicting on test set - scaled
   predTestScaled <- predict(op.rf, testset.scaled)
   # Checking classification accuracy
@@ -131,21 +135,23 @@ runRFModel <- function(chosen_disease) {
   cat(" Disease being analyzed is:", chosen_disease
       ,'\n',"Accuracy on Trainset:", train_accuracy
       ,'\n',"False Negative Rate (Trainset):", fnr_train
-      ,'\n',"Accuracy on Testset_Smote:", test_smote_accuracy
-      ,'\n',"False Negative Rate (Testset_Smote):", fnr_test_smote
+      ,'\n',"Accuracy on Testset:", test_accuracy
+      ,'\n',"False Negative Rate (Testset):", fnr_test
       ,'\n',"Accuracy on Testset_Scaled:", test_scaled_accuracy
       ,'\n',"False Negative Rate (Testset_Scaled):", fnr_test_scaled
       ,'\n',"Accuracy on entire dataset:", overall_accuracy
-      ,'\n',"False Negative Rate (Overall):", fnr_overall)
+      ,'\n',"False Negative Rate (Overall):", fnr_overall
+      ,'\n',"Optimum m_try", op.mtry)
   new_row <- data.frame(chosen_disease, 
                         train_accuracy,
                         fnr_train,
-                        test_smote_accuracy,
-                        fnr_test_smote,
+                        test_accuracy,
+                        fnr_test,
                         test_scaled_accuracy,
                         fnr_test_scaled,
                         overall_accuracy,
-                        fnr_overall)
+                        fnr_overall,
+                        op.mtry)
   return(new_row)
   
 }
@@ -153,15 +159,16 @@ runRFModel <- function(chosen_disease) {
 RandForestResults <- data.table('Disease Name' = character(),
                             'Train Accuracy' = numeric(),
                             'FNR (Train)' = numeric(),
-                            'Test (SMOTE) Accuracy' = numeric(),
-                            'FNR (Test SMOTE)' = numeric(),
+                            'Test  Accuracy' = numeric(),
+                            'FNR (Test)' = numeric(),
                             'Test (Scaled) Accuracy' = numeric(),
                             'FNR (Test Scaled)' = numeric(),
                             'Overall Accuracy' = numeric(),
-                            'FNR (Overall)' = numeric())
+                            'FNR (Overall)' = numeric(),
+                            'Op. mtry' = numeric())
 
 # list of diseases to parse through the model
-disease_list = c("MICHD", "CHCCOPD2", "CHCKDNY2", "CVDSTRK3", "DIABETE4")
+disease_list = c("MICHD", "CHCCOPD2", "CHCKDNY2", "CVDSTRK3", "DIABETE4") #"MICHD", "CHCCOPD2", "CHCKDNY2", "CVDSTRK3", "DIABETE4"
 
 # Start the clock!
 ptm <- proc.time()

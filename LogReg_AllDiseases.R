@@ -27,14 +27,10 @@ runLogRegModel <- function(chosen_disease) {
   
   ### SMOTE ### - highest accuracy rate. 
   # trainset <- smote(DISEASE ~ ., data = trainset.ori,
-  #                   perc.over = 1,k = 5, perc.under = 2)
+  #                   perc.over = 1,k = 6, perc.under = 2)
   # write.csv(trainset, paste("SmotedData/", chosen_disease, "_trainset_pe.csv",sep = ""), row.names = FALSE)
-  # testset.smote <- smote(DISEASE ~ ., data = testset.ori,
-  #                  perc.over = 1, k = 5, perc.under = 2)
-  # write.csv(testset.smote, paste("SmotedData/", chosen_disease, "_testset_pe.csv",sep = ""), row.names = FALSE)
 
   trainset <- readDataOnly(paste("SmotedData/", chosen_disease, "_trainset_pe.csv",sep = ""))
-  testset.smote <- readDataOnly(paste("SmotedData/", chosen_disease, "_testset_pe.csv",sep = ""))
   
   testSplitRatio <- ((3/7)*nrow(trainset))/nrow(testset.ori)
   print(testSplitRatio)
@@ -42,16 +38,14 @@ runLogRegModel <- function(chosen_disease) {
   testset.scaled <- subset(testset.ori, testset_split == T)
   print(table(trainset$DISEASE))
   print(prop.table(table(trainset$DISEASE)))
-  print(table(testset.smote$DISEASE))
-  print(prop.table(table(testset.smote$DISEASE)))
   print(table(testset.scaled$DISEASE))
   print(prop.table(table(testset.scaled$DISEASE)))
 
-  fitAll <- glm(DISEASE ~ SEXVAR + GENHLTH + PHYS14D + MENT14D + POORHLTH + 
-                  HLTHPLN1 + PERSDOC2 + MEDCOST + CHECKUP1 + MARITAL + EDUCA + 
-                  RENTHOM1 + VETERAN3 + EMPLOY1 + CHLDCNT + INCOME2 + WTKG3 + 
-                  HTM4 + DEAF + BLIND + RFSMOK3 + RFDRHV7 + 
-                  TOTINDA + STRFREQ + FRUTDA2 + FTJUDA2 + GRENDA1 + FRNCHDA + 
+  fitAll <- glm(DISEASE ~ SEXVAR + GENHLTH + PHYS14D + MENT14D + POORHLTH +
+                  HLTHPLN1 + PERSDOC2 + MEDCOST + CHECKUP1 + MARITAL + EDUCA +
+                  RENTHOM1 + VETERAN3 + EMPLOY1 + CHLDCNT + INCOME2 + WTKG3 +
+                  HTM4 + DEAF + BLIND + RFSMOK3 + RFDRHV7 +
+                  TOTINDA + STRFREQ + FRUTDA2 + FTJUDA2 + GRENDA1 + FRNCHDA +
                   POTADA1 + VEGEDA2 + HIVRISK5 + RACE + STATE + AGE, data = trainset, family = "binomial" )
   
   stepwise_analysis <- step(fitAll, direction = "backward")
@@ -72,20 +66,13 @@ runLogRegModel <- function(chosen_disease) {
   print(train_accuracy)
   fnr_train <- fnr(train_cf)
    
-  
-  # model prediction on test set Smoted 
-  # prob <- predict.glm(m1, newdata = testset, type = 'response')
-  # y.hat <- ifelse(prob > threshold, 1, 0)
-  # table(testset$DISEASE, y.hat, deparse.level = 2)
-  # test_accuracy <- mean(y.hat == testset$DISEASE) # 74.2% accuracy on testset
-  # plot(testset$MICHD,prob, data = testset)
-  # print(plot(testset$MICHD,prob, data = testset))
-  probTestSmote <- predict.glm(m1, newdata = testset.smote, type = 'response')
-  predTestSmote <- as.factor(ifelse(probTestSmote > threshold, 1, 0))
-  test_smote_cf <- confusionMatrix(predTestSmote, testset.smote$DISEASE)
-  test_smote_accuracy <- test_smote_cf$overall[1]
-  print(test_smote_accuracy)
-  fnr_test_smote <- fnr(test_smote_cf)
+  # model prediction on test set unscaled  
+  probTest <- predict.glm(m1, newdata = testset.ori, type = 'response')
+  predTest <- as.factor(ifelse(probTest > threshold, 1, 0))
+  test_cf <- confusionMatrix(predTest, testset.ori$DISEASE)
+  test_accuracy <- test_cf$overall[1]
+  print(test_accuracy)
+  fnr_test <- fnr(test_cf)
 
   # model prediction on test set scaled 
   probTestScaled <- predict.glm(m1, newdata = testset.scaled, type = 'response')
@@ -94,14 +81,6 @@ runLogRegModel <- function(chosen_disease) {
   test_scaled_accuracy <- test_scaled_cf$overall[1]
   print(test_scaled_accuracy)
   fnr_test_scaled <- fnr(test_scaled_cf)
-
-
-  
-  # model prediction on entire dataset
-  # prob <- predict.glm(m1, newdata = data, type = 'response')
-  # y.hat <- ifelse(prob > threshold, 1, 0)
-  # table(data$DISEASE, y.hat, deparse.level = 2)
-  # overall_accuracy <- mean(y.hat == data$DISEASE) # 73% overall accuracy
 
   # Predicting on entire dataset
   probOverall <- predict.glm(m1, newdata = data, type = 'response')
@@ -115,8 +94,8 @@ runLogRegModel <- function(chosen_disease) {
   cat(" Disease being analyzed is:", chosen_disease
       ,'\n',"Accuracy on Trainset:", train_accuracy
       ,'\n',"False Negative Rate (Trainset):", fnr_train
-      ,'\n',"Accuracy on Testset_Smote:", test_smote_accuracy
-      ,'\n',"False Negative Rate (Testset_Smote):", fnr_test_smote
+      ,'\n',"Accuracy on Testset_Smote:", test_accuracy
+      ,'\n',"False Negative Rate (Testset_Smote):", fnr_test
       ,'\n',"Accuracy on Testset_Scaled:", test_scaled_accuracy
       ,'\n',"False Negative Rate (Testset_Scaled):", fnr_test_scaled
       ,'\n',"Accuracy on entire dataset:", overall_accuracy
@@ -124,8 +103,8 @@ runLogRegModel <- function(chosen_disease) {
   new_row <- data.frame(chosen_disease, 
                         train_accuracy,
                         fnr_train,
-                        test_smote_accuracy,
-                        fnr_test_smote,
+                        test_accuracy,
+                        fnr_test,
                         test_scaled_accuracy,
                         fnr_test_scaled,
                         overall_accuracy,
@@ -137,14 +116,17 @@ runLogRegModel <- function(chosen_disease) {
 LogRegResults <- data.table('Disease Name' = character(),
                             'Train Accuracy' = numeric(),
                             'FNR (Train)' = numeric(),
-                            'Test (SMOTE) Accuracy' = numeric(),
-                            'FNR (Test SMOTE)' = numeric(),
+                            'Test Accuracy' = numeric(),
+                            'FNR (Test)' = numeric(),
                             'Test (Scaled) Accuracy' = numeric(),
                             'FNR (Test Scaled)' = numeric(),
                             'Overall Accuracy' = numeric(),
                             'FNR (Overall)' = numeric())
 # list of diseases to parse through the model
-disease_list = c("MICHD", "CHCCOPD2", "CHCKDNY2", "CVDSTRK3", "DIABETE4")
+disease_list = c("MICHD","CHCCOPD2", "CHCKDNY2", "CVDSTRK3", "DIABETE4")
+
+# Start the clock!
+ptm <- proc.time()
 
 for (disease in disease_list) {
   new_row <- runLogRegModel(disease)
@@ -152,3 +134,5 @@ for (disease in disease_list) {
 }
 
 
+# Stop the clock
+proc.time() - ptm
