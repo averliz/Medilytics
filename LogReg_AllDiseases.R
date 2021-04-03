@@ -30,7 +30,8 @@ runLogRegModel <- function(chosen_disease) {
   #                   perc.over = 1,k = 6, perc.under = 2)
   # write.csv(trainset, paste("SmotedData/", chosen_disease, "_trainset_pe.csv",sep = ""), row.names = FALSE)
 
-  trainset <- readDataOnly(paste("SmotedData/", chosen_disease, "_trainset_pe.csv",sep = ""))
+  # trainset <- readDataOnly(paste("SmotedData/", chosen_disease, "_trainset_pe.csv",sep = ""))
+  trainset <- readDataOnly(paste("SmotedData/", chosen_disease, "knn_trainset_pe.csv",sep = ""))
   
   testSplitRatio <- ((3/7)*nrow(trainset))/nrow(testset.ori)
   print(testSplitRatio)
@@ -53,7 +54,7 @@ runLogRegModel <- function(chosen_disease) {
   
   # first model: logistic regression
   m1 <- glm(formula = stepwise_analysis[["formula"]], data = trainset, family = "binomial")
-  saveRDS(m1, paste("Models/", chosen_disease, "_LogReg.RDS",sep = ""))
+  saveRDS(m1, paste("Models/", chosen_disease, "_knn_LogReg.RDS",sep = ""))
   # m1 <- readRDS(paste("Models/", chosen_disease, "_LogReg.RDS",sep = ""))
   
   # model prediction on train set

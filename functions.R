@@ -97,6 +97,6 @@ fnr <- function(confusionMatrix) {
 }
 
 optimum_threshold_glm <- function(predict, response) {
-  r <- pROC::roc(response, predict)
-  r$thresholds[which.max(r$sensitivities + r$specificities)]
+  r <-  pROC::roc(response, predict)
+  r$thresholds[which.max(r$sensitivities + r$specificities - 1)]
 }
