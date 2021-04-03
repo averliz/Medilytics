@@ -10,30 +10,30 @@ source("functions.R")
 runNNetModel <- function(path, chosen_disease) {
   
   # ensure reproducibility
-  set.seed(1) 
+  set.seed(2407) 
   
   # initialize and load data
   data <- readData(path, chosen_disease)
   data <- normalizeData(data)
   
   
-  getdata <- sample.split(Y = data$DISEASE, SplitRatio = 0.9) # use 15% of the data total
-  maindata <- subset(data, getdata == FALSE)
-  train_test_split <- sample.split(Y = maindata$DISEASE, SplitRatio = 0.7)
-  trainset.ori <- subset(maindata, train_test_split == TRUE)
-  testset.ori <- subset(maindata, train_test_split == FALSE)
+  # getdata <- sample.split(Y = data$DISEASE, SplitRatio = 0.95) # use 15% of the data total
+  # maindata <- subset(data, getdata == FALSE)
+  train_test_split <- sample.split(Y = data$DISEASE, SplitRatio = 0.7)
+  trainset.ori <- subset(data, train_test_split == TRUE)
+  testset.ori <- subset(data, train_test_split == FALSE)
   
 
 
 # Generate and save SMOTE Data --------------------------------------------
-  train <- smote(DISEASE ~ ., data = trainset.ori,
-                 perc.over = 1, perc.under = 2)
+  # train <- smote(DISEASE ~ ., data = trainset.ori,
+                 # perc.over = 1, perc.under = 2)
   # write.csv(train, paste('SMOTEData/train_', chosen_disease, '.csv', sep = ""), row.names = FALSE)
   # 
 
 # Load SMOTE data ---------------------------------------------------------
 
-  # train <- readDataOnly(paste('SMOTEData/train_', chosen_disease, '.csv', sep = ""))
+  train <- readDataOnly(paste('SMOTEData/', chosen_disease, '.csv', sep = ""))
 
   test <- testset.ori
   
@@ -49,10 +49,10 @@ runNNetModel <- function(path, chosen_disease) {
   pure_y <- data$DISEASE
   
   # Training the NNET Model -------------------------------------------------
-  ctrl <- trainControl(method = "cv", search = 'grid')
-  nnet_grid <- expand.grid(decay = 1e-2, size = 15)
-  model_nnet <- train(train_x, train_y, method = 'nnet', metric = "Recall",
-                      trControl = ctrl, tunegrid = nnet_grid, maxit = 100) # increase to 200
+  ctrl <- trainControl(method = "cv", search = 'random')
+  # nnet_grid <- expand.grid(size = seq(from = 10, to = 20, by = 1), decay = seq(from = 0.1, to = 0.5, by = 0.1))
+  model_nnet <- train(train_x, train_y, method = 'nnet', metric = "Accuracy",
+                      trControl = ctrl, tuneLength = 20, maxit = 200, MaxNWts = 4000) # increase to 200
 
   saveRDS(model_nnet, paste("Models/", "NNet_", chosen_disease, ".rds", sep = ""))
 
@@ -91,10 +91,14 @@ NNetResults <- data.table('Disease Name' = character(),
                           'Overall Accuracy' = numeric(),
                           'FNR (All)' = numeric())
 
-disease_list = c( "MICHD", "CHCCOPD2", "CHCKDNY2", "CVDSTRK3", "DIABETE4")
+disease_list = c("MICHD")
 for (disease in disease_list) {
   new_row <- runNNetModel("FinalCleanedData.csv", disease)
   NNetResults <- rbindlist(list(NNetResults, new_row), use.names = FALSE)
 }
 print("Completed sequence - NNet")
 
+model <- readRDS("Models/NNet_MICHD.rds")
+model$results
+model$bestTune
+?train()
