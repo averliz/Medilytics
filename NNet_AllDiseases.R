@@ -91,12 +91,15 @@ NNetResults <- data.table('Disease Name' = character(),
                           'Overall Accuracy' = numeric(),
                           'FNR (All)' = numeric())
 
-disease_list = c("MICHD")
+disease_list = c("CVDSTRK3", "CHCCOPD2", "CHCKDNY2", "DIABETE4")
 for (disease in disease_list) {
   new_row <- runNNetModel("FinalCleanedData.csv", disease)
   NNetResults <- rbindlist(list(NNetResults, new_row), use.names = FALSE)
 }
 print("Completed sequence - NNet")
+
+
+
 
 model <- readRDS("Models/NNet_MICHD.rds")
 model$results

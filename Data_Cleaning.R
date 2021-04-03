@@ -319,6 +319,7 @@ data[FRNCHDA > 1, FRNCHDA := NA]
 data[POTADA1 > 1, POTADA1 := NA]
 data[VEGEDA2 > 5, VEGEDA2 := NA]
 data <- na.omit(data)
-# all in all, there are 215292 observations with no NA values in them at all
+
+# all in all, there are 219088 observations with no NA values in them at all
 
 write.csv(data, "FinalCleanedData.csv",row.names = FALSE) # write all the data to a .csv for analysis
