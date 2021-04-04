@@ -10,14 +10,14 @@ source("functions.R")
 runNNetModel <- function(path, chosen_disease) {
   
   # ensure reproducibility
-  set.seed(1) 
+  set.seed(2407) 
   
   # initialize and load data
   data <- readData(path, chosen_disease)
   data <- normalizeData(data)
   
   
-  # getdata <- sample.split(Y = data$DISEASE, SplitRatio = 0.995) # use 15% of the data total
+  # getdata <- sample.split(Y = data$DISEASE, SplitRatio = 0.95) # use 15% of the data total
   # maindata <- subset(data, getdata == FALSE)
   train_test_split <- sample.split(Y = data$DISEASE, SplitRatio = 0.7)
   trainset.ori <- subset(data, train_test_split == TRUE)
@@ -26,19 +26,16 @@ runNNetModel <- function(path, chosen_disease) {
 
 
 # Generate and save SMOTE Data --------------------------------------------
-  train <- smote(DISEASE ~ ., data = trainset.ori,
-                 perc.over = 1, perc.under = 2)
-  test <- smote(DISEASE ~ ., data = testset.ori,
-                perc.over = 1, perc.under = 2)
-  write.csv(train, paste('SMOTEData/train_', chosen_disease, '.csv', sep = ""), row.names = FALSE)
-  write.csv(test, paste('SMOTEData/test_', chosen_disease, '.csv', sep = ""), row.names = FALSE)
-  
+  # train <- smote(DISEASE ~ ., data = trainset.ori,
+                 # perc.over = 1, perc.under = 2)
+  # write.csv(train, paste('SMOTEData/train_', chosen_disease, '.csv', sep = ""), row.names = FALSE)
+  # 
 
 # Load SMOTE data ---------------------------------------------------------
 
-  # train <- readDataOnly(paste('SMOTEData/train_', chosen_disease, '.csv', sep = "")) 
-  # 
-  # test <- readDataOnly(paste('SMOTEData/test_', chosen_disease, '.csv', sep = ""))
+  train <- readDataOnly(paste('SMOTEData/', chosen_disease, '.csv', sep = ""))
+
+  test <- testset.ori
   
   ##############################################################################
   
@@ -52,10 +49,10 @@ runNNetModel <- function(path, chosen_disease) {
   pure_y <- data$DISEASE
   
   # Training the NNET Model -------------------------------------------------
-  # ctrl <- trainControl(method = "cv", search = 'grid')
-  # nnet_grid <- expand.grid(.decay = c(0.5, 0.2, 0.1),.size = c(3, 5, 10))
+  # ctrl <- trainControl(method = "cv", search = 'random')
+  # # # nnet_grid <- expand.grid(size = seq(from = 10, to = 20, by = 1), decay = seq(from = 0.1, to = 0.5, by = 0.1))
   # model_nnet <- train(train_x, train_y, method = 'nnet', metric = "Accuracy",
-  #                     trControl = ctrl, tunegrid = nnet_grid, maxit = 200)
+  #                     trControl = ctrl, tuneLength = 20, maxit = 200, MaxNWts = 4000) # increase to 200
   # 
   # saveRDS(model_nnet, paste("Models/", "NNet_", chosen_disease, ".rds", sep = ""))
 
@@ -78,26 +75,25 @@ runNNetModel <- function(path, chosen_disease) {
   confusion_matrix_all$table
 
   new_row <- data.frame(chosen_disease, confusion_matrix_train$overall["Accuracy"],
-                        confusion_matrix_train$table[1,2]/(confusion_matrix_train$table[2,2] + confusion_matrix_train$table[1,2]),
+                        confusion_matrix_train$table[2,2]/(confusion_matrix_train$table[2,2] + confusion_matrix_train$table[1,2]),
                         confusion_matrix_test$overall["Accuracy"],
-                        confusion_matrix_test$table[1,2]/(confusion_matrix_test$table[2,2] + confusion_matrix_test$table[1,2]),
+                        confusion_matrix_test$table[2,2]/(confusion_matrix_test$table[2,2] + confusion_matrix_test$table[1,2]),
                         confusion_matrix_all$overall["Accuracy"],
-                        confusion_matrix_all$table[1,2]/(confusion_matrix_all$table[2,2] + confusion_matrix_all$table[1,2]))
+                        confusion_matrix_all$table[2,2]/(confusion_matrix_all$table[2,2] + confusion_matrix_all$table[1,2]))
   return(new_row)
 }
 
 NNetResults <- data.table('Disease Name' = character(),
                           'Train Accuracy' = numeric(),
-                          'FNR (Train)' = numeric(),
+                          'Recall (Train)' = numeric(),
                           'Test Accuracy' = numeric(),
-                          'FNR (Test)' = numeric(),
+                          'Recall (Test)' = numeric(),
                           'Overall Accuracy' = numeric(),
-                          'FNR (All)' = numeric())
+                          'Recall (All)' = numeric())
 
-disease_list = c( "MICHD", "CHCCOPD2", "CHCKDNY2", "CVDSTRK3", "DIABETE4")
+disease_list = c("MICHD", "CHCCOPD2", "CHCKDNY2", "CVDSTRK3", "DIABETE4")
 for (disease in disease_list) {
   new_row <- runNNetModel("FinalCleanedData.csv", disease)
   NNetResults <- rbindlist(list(NNetResults, new_row), use.names = FALSE)
 }
 print("Completed sequence - NNet")
-
