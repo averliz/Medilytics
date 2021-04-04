@@ -49,17 +49,17 @@ runNNetModel <- function(path, chosen_disease) {
   pure_y <- data$DISEASE
   
   # Training the NNET Model -------------------------------------------------
-  ctrl <- trainControl(method = "cv", search = 'random')
-  # nnet_grid <- expand.grid(size = seq(from = 10, to = 20, by = 1), decay = seq(from = 0.1, to = 0.5, by = 0.1))
-  model_nnet <- train(train_x, train_y, method = 'nnet', metric = "Accuracy",
-                      trControl = ctrl, tuneLength = 20, maxit = 200, MaxNWts = 4000) # increase to 200
-
-  saveRDS(model_nnet, paste("Models/", "NNet_", chosen_disease, ".rds", sep = ""))
+  # ctrl <- trainControl(method = "cv", search = 'random')
+  # # # nnet_grid <- expand.grid(size = seq(from = 10, to = 20, by = 1), decay = seq(from = 0.1, to = 0.5, by = 0.1))
+  # model_nnet <- train(train_x, train_y, method = 'nnet', metric = "Accuracy",
+  #                     trControl = ctrl, tuneLength = 20, maxit = 200, MaxNWts = 4000) # increase to 200
+  # 
+  # saveRDS(model_nnet, paste("Models/", "NNet_", chosen_disease, ".rds", sep = ""))
 
 
   # Load NNet from file instead ---------------------------------------------
 
-  # model_nnet <- readRDS(paste("Models/", "NNet_", chosen_disease, ".rds", sep = ""))
+  model_nnet <- readRDS(paste("Models/", "NNet_", chosen_disease, ".rds", sep = ""))
 
   # Getting results from model ----------------------------------------------
   results_train <- predict(model_nnet, newdata = train_x)
@@ -75,23 +75,23 @@ runNNetModel <- function(path, chosen_disease) {
   confusion_matrix_all$table
 
   new_row <- data.frame(chosen_disease, confusion_matrix_train$overall["Accuracy"],
-                        confusion_matrix_train$table[1,2]/(confusion_matrix_train$table[2,2] + confusion_matrix_train$table[1,2]),
+                        confusion_matrix_train$table[2,2]/(confusion_matrix_train$table[2,2] + confusion_matrix_train$table[1,2]),
                         confusion_matrix_test$overall["Accuracy"],
-                        confusion_matrix_test$table[1,2]/(confusion_matrix_test$table[2,2] + confusion_matrix_test$table[1,2]),
+                        confusion_matrix_test$table[2,2]/(confusion_matrix_test$table[2,2] + confusion_matrix_test$table[1,2]),
                         confusion_matrix_all$overall["Accuracy"],
-                        confusion_matrix_all$table[1,2]/(confusion_matrix_all$table[2,2] + confusion_matrix_all$table[1,2]))
+                        confusion_matrix_all$table[2,2]/(confusion_matrix_all$table[2,2] + confusion_matrix_all$table[1,2]))
   return(new_row)
 }
 
 NNetResults <- data.table('Disease Name' = character(),
                           'Train Accuracy' = numeric(),
-                          'FNR (Train)' = numeric(),
+                          'Recall (Train)' = numeric(),
                           'Test Accuracy' = numeric(),
-                          'FNR (Test)' = numeric(),
+                          'Recall (Test)' = numeric(),
                           'Overall Accuracy' = numeric(),
-                          'FNR (All)' = numeric())
+                          'Recall (All)' = numeric())
 
-disease_list = c("CVDSTRK3", "CHCCOPD2", "CHCKDNY2", "DIABETE4")
+disease_list = c("MICHD", "CHCCOPD2", "CHCKDNY2", "CVDSTRK3", "DIABETE4")
 for (disease in disease_list) {
   new_row <- runNNetModel("FinalCleanedData.csv", disease)
   NNetResults <- rbindlist(list(NNetResults, new_row), use.names = FALSE)
@@ -101,7 +101,7 @@ print("Completed sequence - NNet")
 
 
 
-model <- readRDS("Models/NNet_MICHD.rds")
+model <- readRDS("Models/NNet_CVDSTRK3.rds")
 model$results
 model$bestTune
 ?train()
