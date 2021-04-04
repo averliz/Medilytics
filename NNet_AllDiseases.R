@@ -97,11 +97,3 @@ for (disease in disease_list) {
   NNetResults <- rbindlist(list(NNetResults, new_row), use.names = FALSE)
 }
 print("Completed sequence - NNet")
-
-
-
-
-model <- readRDS("Models/NNet_CVDSTRK3.rds")
-model$results
-model$bestTune
-?train()
