@@ -103,6 +103,13 @@ dor <- function(confusionMatrix) {
   return(dor_rate)
 }
 
+f2score <- function(confusionMatrix) {
+  precision <- confusionMatrix$byClass["Precision"]
+  recall <- confusionMatrix$byClass["Recall"]
+  f2score <- (6 * precision * recall)/((5*precision) + recall)
+  return(f2score)
+}
+
 optimum_threshold_glm <- function(predict, response) {
   r <-  pROC::roc(response, predict)
   r$thresholds[which.max(r$sensitivities + r$specificities - 1)]
