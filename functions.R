@@ -108,7 +108,7 @@ dor <- function(confusionMatrix) {
 f2score <- function(confusionMatrix) {
   precision <- confusionMatrix$byClass["Precision"]
   recall <- confusionMatrix$byClass["Recall"]
-  f2score <- (6 * precision * recall)/((5*precision) + recall)
+  f2score <- (5 * precision * recall)/((4*precision) + recall)
   return(f2score)
 }
 
