@@ -97,9 +97,11 @@ fnr <- function(confusionMatrix) {
 }
 
 dor <- function(confusionMatrix) {
-  dor_rate <- 
-    (confusionMatrix$table[1,1]*confusionMatrix$table[2,2])/
-    (confusionMatrix$table[2,1]*confusionMatrix$table[1,2])
+  TN <- confusionMatrix$table[1,1]
+  TP <- confusionMatrix$table[2,2]
+  FN <- confusionMatrix$table[2,1]
+  FP <- confusionMatrix$table[1,2]
+  dor_rate <- (TP/FP)/(FN/TN)
   return(dor_rate)
 }
 
