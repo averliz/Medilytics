@@ -92,10 +92,8 @@ runLogRegModel <- function(chosen_disease) {
   new_row <- data.frame(chosen_disease, 
                         train_accuracy,
                         f2_train,
-                        dor_train,
                         test_accuracy,
                         f2_test,
-                        dor_test,
                         overall_accuracy,
                         f2_overall)
   return(new_row)

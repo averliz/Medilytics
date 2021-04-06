@@ -46,7 +46,7 @@ runRFModel <- function(chosen_disease) {
   # Use TuneRF to obtain the optimum RF model 
   # mtry <- tuneRF(x = trainset[,c(2:36)],
   #             y = trainset$DISEASE,
-  #             ntreeTry = 2000,
+  #             ntreeTry = 1000,
   #             mtryStart = (ncol(trainset) - 1) / 3,
   #             stepFactor = 1.5,
   #             improve    = 1e-05
@@ -131,13 +131,10 @@ runRFModel <- function(chosen_disease) {
 RandForestResults <- data.table('Disease Name' = character(),
                             'Train Accuracy' = numeric(),
                             'F2 Score (Train)' = numeric(),
-                            'DOR (Train)' = numeric(),
                             'Test Accuracy' = numeric(),
                             'F2 Score (Test)' = numeric(),
-                            'DOR (Test)' = numeric(),
                             'Overall Accuracy' = numeric(),
-                            'F2 Score (Overall)' = numeric(),
-                            'DOR (Overall)' = numeric())
+                            'F2 Score (Overall)' = numeric())
 
 # list of diseases to parse through the model
 disease_list = c("MICHD", "CHCCOPD2", "CHCKDNY2", "CVDSTRK3", "DIABETE4") 
