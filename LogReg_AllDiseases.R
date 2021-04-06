@@ -65,14 +65,16 @@ runLogRegModel <- function(chosen_disease) {
   train_cf <- confusionMatrix(predTrain, trainset$DISEASE)
   train_accuracy <- train_cf$overall[1]
   print(train_accuracy)
-  f2_train <- f2score(train_cf)
+  recall_train <- train_cf$byClass["Recall"]
+  
   # model prediction on test set scaled 
   probTest <- predict.glm(op.LogReg, newdata = testset, type = 'response')
   predTest <- as.factor(ifelse(probTest > threshold, 1, 0))
   test_cf <- confusionMatrix(predTest, testset$DISEASE)
   test_accuracy <- test_cf$overall[1]
   print(test_accuracy)
-  f2_test <- f2score(test_cf)
+  recall_test <- test_cf$byClass["Recall"]
+
   # Predicting on entire dataset
   probOverall <- predict.glm(op.LogReg, newdata = data, type = 'response')
   predOverall <- as.factor(ifelse(probOverall > threshold, 1, 0))
@@ -80,33 +82,33 @@ runLogRegModel <- function(chosen_disease) {
   overall_cf <- confusionMatrix(predOverall, data$DISEASE)
   overall_accuracy <- overall_cf$overall[1]
   print(overall_accuracy)
-  f2_overall <- f2score(overall_cf)
+  recall_overall <- overall_cf$byClass["Recall"]
   
   cat(" Disease being analyzed is:", chosen_disease
       ,'\n',"Accuracy on Trainset:", train_accuracy
-      ,'\n',"F2 Score (Train):", f2_train
+      ,'\n',"Recall (Train):", recall_train
       ,'\n',"Accuracy on Testset:", test_accuracy
-      ,'\n',"F2 Score (Test):", f2_test
+      ,'\n',"Recall (Test):", recall_test
       ,'\n',"Accuracy on entire dataset:", overall_accuracy
-      ,'\n',"F2 Score (Overall):", f2_overall)
+      ,'\n',"Recall (Overall):", recall_overall)
   new_row <- data.frame(chosen_disease, 
                         train_accuracy,
-                        f2_train,
+                        recall_train,
                         test_accuracy,
-                        f2_test,
+                        recall_test,
                         overall_accuracy,
-                        f2_overall)
+                        recall_overall)
   return(new_row)
   
 }
 # Create the empty table to hold all the data
 LogRegResults <- data.table('Disease Name' = character(),
                             'Train Accuracy' = numeric(),
-                            'F2 Score (Train)' = numeric(),
+                            'Recall (Train)' = numeric(),
                             'Test Accuracy' = numeric(),
-                            'F2 Score (Test)' = numeric(),
+                            'Recall (Test)' = numeric(),
                             'Overall Accuracy' = numeric(),
-                            'F2 Score (Overall)' = numeric())
+                            'Recall (Overall)' = numeric())
 
 # list of diseases to parse through the model
 disease_list = c("MICHD","CHCCOPD2", "CHCKDNY2", "CVDSTRK3", "DIABETE4")
